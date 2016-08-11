@@ -14,3 +14,5 @@ GameObject.prototype.baseUpdate = function(deltaTime) {
   this.mesh.rotation.copy(this.transform.rotation);
   this.mesh.scale.copy(this.transform.scale);
 };
+
+module.exports = GameObject;

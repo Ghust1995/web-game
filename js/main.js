@@ -1,6 +1,7 @@
-//  var GameObject = require("GameObject");
+const Input = require('./Input');
+const GameObject = require('./GameObject');
+const _ = require('lodash');
 
-// Declarations
 var container, scene, camera, renderer, controls, stats, hierarchy;
 var clock = new THREE.Clock();
 
@@ -17,17 +18,17 @@ INIT_SPECS = {
 };
 
 rawHierarchy = [
-  {
-    name: "Camera",
-    scripts:[{
-      init: function(go, deltaTime) {
-        ASPECT = specs.SCREEN_WIDTH / specs.SCREEN_HEIGHT;
-        go.camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-        go.camera.position.set(specs.CAM_POS.X, specs.CAM_POS.Y, specs.CAM_POS.Z);
-        go.camera.lookAt(new THREE.Vector3(0, 0, 0));
-      }
-    }],
-  },
+  // {
+  //   name: "Camera",
+  //   scripts:[{
+  //     init: function(go, deltaTime) {
+  //       ASPECT = specs.SCREEN_WIDTH / specs.SCREEN_HEIGHT;
+  //       go.camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
+  //       go.camera.position.set(specs.CAM_POS.X, specs.CAM_POS.Y, specs.CAM_POS.Z);
+  //       go.camera.lookAt(new THREE.Vector3(0, 0, 0));
+  //     }
+  //   }],
+  // },
   {
     name: "Bola",
     geometry: {
@@ -117,6 +118,11 @@ function init(specs) {
   //First we initialize the scene and our camera
   scene = new THREE.Scene();
 
+  ASPECT = specs.SCREEN_WIDTH / specs.SCREEN_HEIGHT;
+  camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
+  camera.position.set(specs.CAM_POS.X, specs.CAM_POS.Y, specs.CAM_POS.Z);
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
+  scene.add(camera);
 
 
   //We create the WebGL renderer and add it to the document

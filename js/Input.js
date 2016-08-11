@@ -46,3 +46,5 @@ Input = {
     39: 0x8,
   },
 };
+
+module.exports = Input;
