@@ -70,20 +70,38 @@
 	};
 
 	rawHierarchy = {
-	  // Camera: {
-	  //   scripts:[{
-	  //     init: function(go, deltaTime) {
-	  //       ASPECT = specs.SCREEN_WIDTH / specs.SCREEN_HEIGHT;
-	  //       go.camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-	  //       go.camera.position.set(specs.CAM_POS.X, specs.CAM_POS.Y, specs.CAM_POS.Z);
-	  //       go.camera.lookAt(new THREE.Vector3(0, 0, 0));
-	  //     }
-	  //   }],
-	  // },
-	  Bola: {
+	  Camera: {
+	    scripts:[{
+	      init: function(go) {
+	        ASPECT = INIT_SPECS.SCREEN_WIDTH / INIT_SPECS.SCREEN_HEIGHT;
+	        camera = new THREE.PerspectiveCamera( INIT_SPECS.VIEW_ANGLE, ASPECT, INIT_SPECS.NEAR, INIT_SPECS.FAR );
+	        camera.position.set(INIT_SPECS.CAM_POS.X, INIT_SPECS.CAM_POS.Y, INIT_SPECS.CAM_POS.Z);
+	        camera.lookAt(new THREE.Vector3(0, 0, 0));
+	        go.add(camera);
+	      }
+	    }],
+	  },
+	  Floor: {
+	    scripts:[{
+	      init: function(go) {
+	        textureLoader = new THREE.TextureLoader();
+	        textureLoader.load( 'textures/checkerboard.jpg', function(floorTexture) {
+	          floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+	        	floorTexture.repeat.set( 10, 10 );
+	        	var floorMaterial = new THREE.MeshPhongMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+	        	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+	        	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+	        	floor.position.y = -100;
+	        	floor.rotation.x = Math.PI / 2;
+	        	go.add(floor);
+	        });
+	      }
+	    }]
+	  },
+	  Ball: {
 	    transform: {
-	      position: new THREE.Vector3(-200, 0, 0),
-	      rotation: new THREE.Vector3(0, 0, 0),
+	      position: new THREE.Vector3(0, 0, 0),
+	      rotation: new THREE.Euler(0, 0, 0),
 	      scale: new THREE.Vector3(1, 1, 1)
 	    },
 	    mesh: {
@@ -102,12 +120,44 @@
 	      velocity: new THREE.Vector3(0, 0, 0),
 	      update: function(go, deltaTime) {
 	        if(Input.isPressed(Input.Keys.UP))
-	          this.velocity.copy(new THREE.Vector3(0, 500 * deltaTime, 0));
+	          this.velocity.copy(new THREE.Vector3(0, 1, 0));
 	        go.transform.position.add(this.velocity);
 	        this.velocity.add(new THREE.Vector3(0, (-35) * deltaTime, 0));
 	        if(go.transform.position.y < -100 && this.velocity.y < 0)
-	          this.velocity.y = -this.velocity.y;
-
+	          this.velocity.y = 0.0;
+	      }
+	    }]
+	  },
+	  Skybox: {
+	    scripts: [{
+	      init: function(go) {
+	        // make sure the camera's "far" value is large enough so that it will render the skyBox!
+	      	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
+	      	// BackSide: render faces from inside of the cube, instead of from outside (default).
+	      	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
+	      	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+	      	go.add(skyBox);
+	      }
+	    }]
+	  },
+	  Light: {
+	    transform: {
+	      position: new THREE.Vector3(0, 200, 0),
+	      rotation: new THREE.Euler(0, 0, 0),
+	      scale: new THREE.Vector3(1, 1, 1)
+	    },
+	    scripts: [{
+	      totalTime: 0,
+	      light: null,
+	      init: function(go) {
+	        this.light = new THREE.SpotLight(0xffffff, 1.0, 1000, Math.PI/4, 0.5);
+	        go.add(this.light);
+	      },
+	      update: function(go, deltaTime) {
+	        go.transform.position.x = 100*Math.sin(50*this.totalTime);
+	        //go.transform.position.y = 50 + 100*Math.cos(50*this.totalTime);
+	        //go.transform.rotation.z = Math.PI * Math.sin(50*this.totalTime);
+	        this.totalTime += deltaTime;
 	      }
 	    }]
 	  }
@@ -142,7 +192,7 @@
 	window.onload = function() {
 	  loadStuff(THINGS_TO_LOAD).then(values => {
 	    values.forEach(v => LOADED_STUFF[v.name] = v.data);
-	    init(INIT_SPECS);
+	    init();
 	    animate();
 	  });
 	};
@@ -164,28 +214,20 @@
 	  update();
 	}
 
-	function init(specs) {
+	function init() {
 	  //First we initialize the scene and our camera
 	  scene = new THREE.Scene();
 
-	  ASPECT = specs.SCREEN_WIDTH / specs.SCREEN_HEIGHT;
-	  camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-	  camera.position.set(specs.CAM_POS.X, specs.CAM_POS.Y, specs.CAM_POS.Z);
-	  camera.lookAt(new THREE.Vector3(0, 0, 0));
-	  scene.add(camera);
-
+	  hierarchy = createTHREEHierarchy(rawHierarchy, scene);
 
 	  //We create the WebGL renderer and add it to the document
 	  renderer = new THREE.WebGLRenderer( { antialias:true });
-	  renderer.setSize( specs.SCREEN_WIDTH, specs.SCREEN_HEIGHT );
+	  renderer.setSize( INIT_SPECS.SCREEN_WIDTH, INIT_SPECS.SCREEN_HEIGHT );
 	  container = document.getElementById("WebGLContainer");
 	  container.appendChild( renderer.domElement );
 
-	  // Basic controls
-	  controls = new THREE.OrbitControls(camera, renderer.domElement);
-
 	  // Stats display
-	  if(specs.SHOW_STATS) {
+	  if(INIT_SPECS.SHOW_STATS) {
 	    stats = new Stats();
 	  	stats.domElement.style.position = 'absolute';
 	  	stats.domElement.style.top = '0px';
@@ -196,46 +238,11 @@
 	  //Input
 	  Input.registerKeys();
 
-	  // Light
-	  var light = new THREE.DirectionalLight(0xffffff, 1.0);
-	  light.position.set(0, 200, 50);
-	  scene.add(light);
-	  //var ambientLight = new THREE.ambientLight(0x111111);
+	  // Basic controls
+	  controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 
-		// make sure the camera's "far" value is large enough so that it will render the skyBox!
-		var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
-		// BackSide: render faces from inside of the cube, instead of from outside (default).
-		var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
-		var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-		scene.add(skyBox);
-
-	  //Load texture
-	  textureLoader = new THREE.TextureLoader();
-
-	  // TODO: Make possible to put this in hierarchy
-	  textureLoader.load( 'textures/checkerboard.jpg', function(floorTexture) {
-	    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-	  	floorTexture.repeat.set( 10, 10 );
-	  	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-	  	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-	  	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-	  	floor.position.y = -100;
-	  	floor.rotation.x = Math.PI / 2;
-	  	//scene.add(floor);
-	  });
-
-
-	  for(let i = 0; i < 3; i++) {
-	    for(let j = 0; j < 3; j++) {
-	      //createDancingThing(light, new THREE.Vector3(-110 + i*110, -100 + j*100, 0), new THREE.Vector3(0.5,0.5,0.5));
-	    }
-	  }
-
-	  gDancingThing = createDancingThing(light, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 1, 1), new THREE.Euler(-Math.PI/2, 0, 0, "XYZ"));
-
-
-	  hierarchy = createTHREEHierarchy(rawHierarchy, scene);
+	  //gDancingThing = createDancingThing(light, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 1, 1), new THREE.Euler(-Math.PI/2, 0, 0, "XYZ"));
 	}
 	var gDancingThing;
 
@@ -276,7 +283,6 @@
 	    type: "f",
 	    value: 0.0
 	  },
-
 	};
 
 	function createShaderMaterial(light) {
@@ -290,30 +296,20 @@
 
 
 	var thingVelocity = new THREE.Vector3(0, 0, 0);
-
 	var force = -50000;
-	function addForce(value, time) {
-	  force = value;
-	  setTimeout(() => force = -50000, time);
-	}
 
 	function update() {
 	  var delta = clock.getDelta();
 	  _.forOwn(hierarchy, go => go.baseUpdate(delta));
 	  UpdateDancingThing = (deltaTime) => {
 	      if(Input.isDown(Input.Keys.UP)) {
-	        //thingVelocity.copy(new THREE.Vector3(0, 3000, 0));
 	        force = 300000;
-
 	      }
+
 	      else {
 	        force = -50000;
 	      }
-
-	      gDancingThing.position.addScaledVector(thingVelocity, deltaTime);
 	      thingVelocity.add(new THREE.Vector3(0, (force) * deltaTime, 0));
-	      //if(gDancingThing.position.y < -100 && thingVelocity.y < 0)
-	        //thingVelocity.y = -thingVelocity.y;
 	      uniforms.uVelocity.value.set(0, 0, thingVelocity.y);
 	  };
 	  UpdateDancingThing(delta);
@@ -388,13 +384,18 @@
 
 	function GameObject(transform, mesh, scripts) {
 	  THREE.Object3D.call(this);
-	  if(this.scripts)
-	    _.each(this.scripts, (script) => {
-	      if(_.has(script, 'init'))
-	        script.init(this);
-	    });
 
-	  this.transform = transform;
+	  //If transform is not defined, set to default transform
+	  if(!_.isUndefined(transform)){
+	    this.transform = transform;
+	    setObject3dTransform(this, transform);
+	  }
+
+	  this.scripts = scripts;
+	  _.each(this.scripts, (script) => {
+	    if(_.has(script, 'init'))
+	      script.init(this);
+	  });
 
 	  // Probably hardcode later for easy stuff
 	  if(!_.isUndefined(mesh)){
@@ -403,26 +404,36 @@
 	    this.mesh = new THREE.Mesh(geometry, material);
 	    this.add(this.mesh);
 	  }
-
-	  this.scripts = scripts;
 	}
 
-	GameObject.prototype = Object.create(THREE.Object3D.prototype);
+	GameObject.prototype = Object.create(THREE.Object3D.prototype, {
+	  transform: {
+	    value: {
+	      position: new THREE.Vector3(0, 0, 0),
+	      rotation: new THREE.Euler(0, 0, 0),
+	      scale: new THREE.Vector3(1, 1, 1)
+	    },
+	    writable: true,
+	    configurable: true
+	  }
+	});
 
 	GameObject.prototype.constructor = GameObject;
 
+	setObject3dTransform = function (o3dTo, tFrom) {
+	  o3dTo.position.copy(tFrom.position);
+	  o3dTo.rotation.copy(tFrom.rotation);
+	  o3dTo.scale.copy(tFrom.scale);
+	};
+
 	GameObject.prototype.baseUpdate = function(deltaTime) {
-	  if(this.scripts)
+	  if(this.scripts){
 	    _.each(this.scripts, (script) => {
 	      if(_.has(script, 'update'))
 	        script.update(this, deltaTime);
 	    });
-	  // if(!_.isUndefined(this.mesh)) {
-	  //   this.position.copy(this.transform.position);
-	  //   this.rotation.copy(this.transform.rotation);
-	  //   this.scale.copy(this.transform.scale);
-	  // }
-
+	  }
+	  setObject3dTransform(this, this.transform);
 	};
 
 	module.exports = GameObject;

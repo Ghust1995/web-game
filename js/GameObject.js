@@ -3,13 +3,18 @@ const THREE = require('three');
 
 function GameObject(transform, mesh, scripts) {
   THREE.Object3D.call(this);
-  if(this.scripts)
-    _.each(this.scripts, (script) => {
-      if(_.has(script, 'init'))
-        script.init(this);
-    });
 
-  this.transform = transform;
+  //If transform is not defined, set to default transform
+  if(!_.isUndefined(transform)){
+    this.transform = transform;
+    setObject3dTransform(this, transform);
+  }
+
+  this.scripts = scripts;
+  _.each(this.scripts, (script) => {
+    if(_.has(script, 'init'))
+      script.init(this);
+  });
 
   // Probably hardcode later for easy stuff
   if(!_.isUndefined(mesh)){
@@ -18,26 +23,36 @@ function GameObject(transform, mesh, scripts) {
     this.mesh = new THREE.Mesh(geometry, material);
     this.add(this.mesh);
   }
-
-  this.scripts = scripts;
 }
 
-GameObject.prototype = Object.create(THREE.Object3D.prototype);
+GameObject.prototype = Object.create(THREE.Object3D.prototype, {
+  transform: {
+    value: {
+      position: new THREE.Vector3(0, 0, 0),
+      rotation: new THREE.Euler(0, 0, 0),
+      scale: new THREE.Vector3(1, 1, 1)
+    },
+    writable: true,
+    configurable: true
+  }
+});
 
 GameObject.prototype.constructor = GameObject;
 
+setObject3dTransform = function (o3dTo, tFrom) {
+  o3dTo.position.copy(tFrom.position);
+  o3dTo.rotation.copy(tFrom.rotation);
+  o3dTo.scale.copy(tFrom.scale);
+};
+
 GameObject.prototype.baseUpdate = function(deltaTime) {
-  if(this.scripts)
+  if(this.scripts){
     _.each(this.scripts, (script) => {
       if(_.has(script, 'update'))
         script.update(this, deltaTime);
     });
-  // if(!_.isUndefined(this.mesh)) {
-  //   this.position.copy(this.transform.position);
-  //   this.rotation.copy(this.transform.rotation);
-  //   this.scale.copy(this.transform.scale);
-  // }
-
+  }
+  setObject3dTransform(this, this.transform);
 };
 
 module.exports = GameObject;
