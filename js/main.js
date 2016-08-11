@@ -1,6 +1,12 @@
 const Input = require('./Input');
 const GameObject = require('./GameObject');
 const _ = require('lodash');
+const THREE = require('three');
+const $ = require('jquery');
+
+const OrbitControls = require('../libraries/OrbitControls');
+const Detector = require('../libraries/Detector');
+const Stats = require('../libraries/Stats');
 
 var container, scene, camera, renderer, controls, stats, hierarchy;
 var clock = new THREE.Clock();
@@ -17,9 +23,8 @@ INIT_SPECS = {
   SHOW_STATS: true
 };
 
-rawHierarchy = [
-  // {
-  //   name: "Camera",
+rawHierarchy = {
+  // Camera: {
   //   scripts:[{
   //     init: function(go, deltaTime) {
   //       ASPECT = specs.SCREEN_WIDTH / specs.SCREEN_HEIGHT;
@@ -29,22 +34,23 @@ rawHierarchy = [
   //     }
   //   }],
   // },
-  {
-    name: "Bola",
-    geometry: {
-      type: THREE.SphereGeometry,
-      params: [10, 32, 32]
-    },
-    material: {
-      type: THREE.MeshPhongMaterial,
-      params: {
-        color: 0x00a9ff
-      }
-    },
+  Bola: {
     transform: {
       position: new THREE.Vector3(-200, 0, 0),
       rotation: new THREE.Vector3(0, 0, 0),
       scale: new THREE.Vector3(1, 1, 1)
+    },
+    mesh: {
+      geometry: {
+      type: THREE.SphereGeometry,
+      params: [10, 32, 32]
+      },
+      material: {
+        type: THREE.MeshPhongMaterial,
+        params: {
+          color: 0x00a9ff
+        }
+      }
     },
     scripts: [{
       velocity: new THREE.Vector3(0, 0, 0),
@@ -59,17 +65,15 @@ rawHierarchy = [
       }
     }]
   }
-];
+};
 
 function createTHREEHierarchy(raw, scene) {
-  hierarchy = [];
-  raw.forEach(function (rawGO) {
+  hierarchy = _.mapValues(raw, function (rawGO) {
     var newGO = new GameObject( rawGO.transform,
-                                rawGO.geometry,
-                                rawGO.material,
+                                rawGO.mesh,
                                 rawGO.scripts);
-    scene.add(newGO.mesh);
-    hierarchy.push(newGO);
+    scene.add(newGO);
+    return newGO;
   });
 
   return hierarchy;
@@ -249,7 +253,7 @@ function addForce(value, time) {
 
 function update() {
   var delta = clock.getDelta();
-  hierarchy.forEach(go => go.baseUpdate(delta));
+  _.forOwn(hierarchy, go => go.baseUpdate(delta));
   UpdateDancingThing = (deltaTime) => {
       if(Input.isDown(Input.Keys.UP)) {
         //thingVelocity.copy(new THREE.Vector3(0, 3000, 0));
@@ -265,7 +269,6 @@ function update() {
       //if(gDancingThing.position.y < -100 && thingVelocity.y < 0)
         //thingVelocity.y = -thingVelocity.y;
       uniforms.uVelocity.value.set(0, 0, thingVelocity.y);
-      console.log(thingVelocity);
   };
   UpdateDancingThing(delta);
   controls.update();
