@@ -88,7 +88,7 @@ rawHierarchy = {
         // make sure the camera's "far" value is large enough so that it will render the skyBox!
       	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
       	// BackSide: render faces from inside of the cube, instead of from outside (default).
-      	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
+      	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x005500, side: THREE.BackSide } );
       	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
       	go.add(skyBox);
       }
@@ -104,7 +104,7 @@ rawHierarchy = {
       totalTime: 0,
       light: null,
       init: function(go) {
-        this.light = new THREE.SpotLight(0xffffff, 1.0, 1000, Math.PI/4, 0.5);
+        this.light = new THREE.SpotLight(0xffffff, 1.0, 1000, Math.PI/4, 0.5, 2);
         go.add(this.light);
       },
       update: function(go, deltaTime) {
@@ -117,12 +117,13 @@ rawHierarchy = {
   }
 };
 
+//TODO: Make this recursive for children
 function createTHREEHierarchy(raw, scene) {
   hierarchy = _.mapValues(raw, function (rawGO) {
     var newGO = new GameObject( rawGO.transform,
                                 rawGO.mesh,
-                                rawGO.scripts);
-    scene.add(newGO);
+                                rawGO.scripts,
+                                scene);
     return newGO;
   });
 

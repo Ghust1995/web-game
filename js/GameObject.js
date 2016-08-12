@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const THREE = require('three');
 
-function GameObject(transform, mesh, scripts) {
+function GameObject(transform, mesh, scripts, parent) {
   THREE.Object3D.call(this);
 
   //If transform is not defined, set to default transform
@@ -23,6 +23,8 @@ function GameObject(transform, mesh, scripts) {
     this.mesh = new THREE.Mesh(geometry, material);
     this.add(this.mesh);
   }
+
+  parent.add(this);
 }
 
 GameObject.prototype = Object.create(THREE.Object3D.prototype, {
