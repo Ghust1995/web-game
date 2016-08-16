@@ -3,12 +3,10 @@ const GameObject = require('./GameObject');
 const _ = require('lodash');
 const THREE = require('three');
 const $ = require('jquery');
-
-const OrbitControls = require('../libraries/OrbitControls');
 const Detector = require('../libraries/Detector');
 const Stats = require('../libraries/Stats');
 
-var container, scene, camera, renderer, controls, stats, hierarchy;
+var container, camera, renderer, controls, stats, hierarchy, gLight;
 var clock = new THREE.Clock();
 
 INIT_SPECS = {
@@ -52,7 +50,7 @@ rawHierarchy = {
       }
     }]
   },
-  Ball: {
+  Player: {
     transform: {
       position: new THREE.Vector3(0, 0, 0),
       rotation: new THREE.Euler(0, 0, 0),
@@ -75,12 +73,33 @@ rawHierarchy = {
       update: function(go, deltaTime) {
         if(Input.isPressed(Input.Keys.UP))
           this.velocity.copy(new THREE.Vector3(0, 1, 0));
-        go.transform.position.add(this.velocity);
+        //go.transform.position.add(this.velocity);
         this.velocity.add(new THREE.Vector3(0, (-35) * deltaTime, 0));
         if(go.transform.position.y < -100 && this.velocity.y < 0)
           this.velocity.y = 0.0;
       }
-    }]
+    }],
+    children: {
+      Sword: {
+        transform: {
+          position: new THREE.Vector3(-10, 32, 0),
+          rotation: new THREE.Euler(0, 0, 0),
+          scale: new THREE.Vector3(1, 1, 1)
+        },
+        mesh: {
+          geometry: {
+          type: THREE.BoxGeometry,
+          params: [1, 50, 1]
+          },
+          material: {
+            type: THREE.MeshPhongMaterial,
+            params: {
+              color: 0xFFFFFF
+            }
+          }
+        }
+      }
+    },
   },
   Skybox: {
     scripts: [{
@@ -88,7 +107,7 @@ rawHierarchy = {
         // make sure the camera's "far" value is large enough so that it will render the skyBox!
       	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
       	// BackSide: render faces from inside of the cube, instead of from outside (default).
-      	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x005500, side: THREE.BackSide } );
+      	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000055, side: THREE.BackSide } );
       	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
       	go.add(skyBox);
       }
@@ -105,28 +124,30 @@ rawHierarchy = {
       light: null,
       init: function(go) {
         this.light = new THREE.SpotLight(0xffffff, 1.0, 1000, Math.PI/4, 0.5, 2);
+        gLight = this.light;
         go.add(this.light);
       },
-      update: function(go, deltaTime) {
-        go.transform.position.x = 100*Math.sin(50*this.totalTime);
-        //go.transform.position.y = 50 + 100*Math.cos(50*this.totalTime);
-        //go.transform.rotation.z = Math.PI * Math.sin(50*this.totalTime);
-        this.totalTime += deltaTime;
-      }
     }]
   }
 };
 
-//TODO: Make this recursive for children
-function createTHREEHierarchy(raw, scene) {
-  hierarchy = _.mapValues(raw, function (rawGO) {
-    var newGO = new GameObject( rawGO.transform,
-                                rawGO.mesh,
-                                rawGO.scripts,
-                                scene);
-    return newGO;
-  });
+function createAllChildren(childrenRaw, parentgo) {
+  _.forIn(childrenRaw, function (val, key) {
+    var newGO = new GameObject( key,
+                                val.transform,
+                                val.mesh,
+                                val.scripts,
+                                parentgo);
 
+    createAllChildren(val.children, newGO);
+  });
+}
+// Hierarchy creates a scene and adds everything specified on rawrawHierarchy
+function createTHREEHierarchy(rawHierarchy) {
+  // Extending scene base to be an Hierarchy
+  // This is basically a scene with GameObject children
+  var hierarchy = new THREE.Scene();
+  createAllChildren(rawHierarchy, hierarchy);
   return hierarchy;
 }
 
@@ -164,16 +185,12 @@ function loadStuff(thingsToLoad) {
 
 function animate() {
   requestAnimationFrame(animate);
-  uniforms.uTime.value += clock.getDelta()*10.0;
-  renderer.render(scene, camera);
+  renderer.render(hierarchy, camera);
   update();
 }
 
 function init() {
-  //First we initialize the scene and our camera
-  scene = new THREE.Scene();
-
-  hierarchy = createTHREEHierarchy(rawHierarchy, scene);
+  hierarchy = createTHREEHierarchy(rawHierarchy);
 
   //We create the WebGL renderer and add it to the document
   renderer = new THREE.WebGLRenderer( { antialias:true });
@@ -192,83 +209,13 @@ function init() {
 
   //Input
   Input.registerKeys();
-
-  // Basic controls
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-
-  //gDancingThing = createDancingThing(light, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 1, 1), new THREE.Euler(-Math.PI/2, 0, 0, "XYZ"));
 }
-var gDancingThing;
-
-function createDancingThing(light, position, scale, rotation) {
-  var materialColor = new THREE.Color();
-	materialColor.setRGB(1.0, 0, 0);
-	sMaterial = createShaderMaterial(light);
-	sMaterial.uniforms.uMaterialColor.value.copy(materialColor);
-	sMaterial.side = THREE.DoubleSide;
-	var thing = new THREE.Mesh(
-		new THREE.TorusKnotGeometry( 40, 8, 500, 16, 2, 5 ), sMaterial);
-	scene.add(thing);
-  thing.rotation.copy(rotation);
-  thing.position.copy(position);
-  thing.scale.copy(scale);
-  return thing;
-}
-
-uniforms = {
-  "uDirLightPos":	{ type: "v3", value: new THREE.Vector3() },
-  "uDirLightColor": { type: "c", value: new THREE.Color( 0xFFFFFF ) },
-  "uMaterialColor": { type: "c", value: new THREE.Color( 0xFFFFFF ) },
-  "uRotationCenter":	{ type: "v3", value: new THREE.Vector3(0, 0, 0) },
-  "uVelocity":	{ type: "v3", value: new THREE.Vector3(0, 0, 0) },
-  uKd: {
-    type: "f",
-    value: 0.7
-  },
-  uBorder1: {
-    type: "f",
-    value: 0.6
-  },
-  uBorder2: {
-    type: "f",
-    value: 0.3
-  },
-  uTime: {
-    type: "f",
-    value: 0.0
-  },
-};
-
-function createShaderMaterial(light) {
-  var vs = LOADED_STUFF.vertShader;
-  var fs = LOADED_STUFF.fragShader;
-  var material = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vs, fragmentShader: fs});
-  material.uniforms.uDirLightPos.value = light.position;
-  material.uniforms.uDirLightColor.value = light.color;
-  return material;
-}
-
-
-var thingVelocity = new THREE.Vector3(0, 0, 0);
-var force = -50000;
 
 function update() {
-  var delta = clock.getDelta();
-  _.forOwn(hierarchy, go => go.baseUpdate(delta));
-  UpdateDancingThing = (deltaTime) => {
-      if(Input.isDown(Input.Keys.UP)) {
-        force = 300000;
-      }
+  var deltaTime = clock.getDelta();
+  // Make scene a game object so we only need do call scene?
+  _.forEach(_.filter(hierarchy.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
 
-      else {
-        force = -50000;
-      }
-      thingVelocity.add(new THREE.Vector3(0, (force) * deltaTime, 0));
-      uniforms.uVelocity.value.set(0, 0, thingVelocity.y);
-  };
-  UpdateDancingThing(delta);
-  controls.update();
 	stats.update();
   Input.update();
 }
