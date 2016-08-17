@@ -47,22 +47,6 @@ LOADED_STUFF = {};
 // LOADED_STUFF -> add to each object?
 // TODO: move everything to components (mesh);
 rawHierarchy = {
-  Camera: {
-    components:[{
-      init: function(go) {
-        specs = {
-          VIEW_ANGLE: 45,
-          NEAR: 0.1,
-          FAR: 20000
-        };
-        ASPECT = 4/3;
-        mainCamera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-        mainCamera.position.set(0, 100, 500);
-        mainCamera.lookAt(new THREE.Vector3(0, 0, 0));
-        go.add(mainCamera);
-      }
-    }],
-  },
   Floor: {
     transform: {
       position: new THREE.Vector3(0, 0, 0),
@@ -95,7 +79,7 @@ rawHierarchy = {
         update: function(go, deltaTime) {
           var vert = (Input.isDown(Input.Keys.UP) ? 1 : 0) + (Input.isDown(Input.Keys.DOWN) ? -1 : 0);
           var horz = (Input.isDown(Input.Keys.RIGHT) ? 1 : 0) + (Input.isDown(Input.Keys.LEFT) ? -1 : 0);
-          var linVelocity = new THREE.Vector3(0, 0, this.linSpeed * vert * deltaTime);
+          var linVelocity = new THREE.Vector3(0, 0, -this.linSpeed * vert * deltaTime);
           var angDelta = this.angSpeed * horz * deltaTime;
           go.transform.rotation.y -= angDelta;
           linVelocity.applyAxisAngle(new THREE.Vector3(0, 1, 0), go.transform.rotation.y);
@@ -118,8 +102,8 @@ rawHierarchy = {
     children: {
       Sword: {
         transform: {
-          position: new THREE.Vector3(-20, 0, 30),
-          rotation: new THREE.Euler(Math.PI/2, 0, 0),
+          position: new THREE.Vector3(-20, 0, -30),
+          rotation: new THREE.Euler(-Math.PI/2, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
         components: [
@@ -137,7 +121,7 @@ rawHierarchy = {
       },
       Shield: {
         transform: {
-          position: new THREE.Vector3(20, 0, 20),
+          position: new THREE.Vector3(20, 0, -20),
           rotation: new THREE.Euler(Math.PI/2, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
@@ -186,6 +170,22 @@ rawHierarchy = {
             }
           }),
         ],
+      },
+      Camera: {
+        components:[{
+          init: function(go) {
+            specs = {
+              VIEW_ANGLE: 45,
+              NEAR: 0.1,
+              FAR: 20000
+            };
+            ASPECT = 4/3;
+            mainCamera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
+            mainCamera.position.set(0, 100, 300);
+            mainCamera.lookAt(new THREE.Vector3(0, 0, 0));
+            go.add(mainCamera);
+          }
+        }],
       },
     }
   },
