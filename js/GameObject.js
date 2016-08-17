@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const THREE = require('three');
 
-function GameObject(name, transform, mesh, scripts, parent) {
+function GameObject(name, transform, mesh, components, parent) {
   THREE.Object3D.call(this);
 
   this._nameid = name;
@@ -12,8 +12,8 @@ function GameObject(name, transform, mesh, scripts, parent) {
     setObject3dTransform(this, transform);
   }
 
-  this.scripts = scripts;
-  CallAllScriptsWithFunction(this.scripts, "init", this);
+  this.components = components;
+  CallAllComponentsWithFunction(this.components, "init", this);
 
   // Probably hardcode later for easy stuff
   if(!_.isUndefined(mesh)){
@@ -55,14 +55,14 @@ GameObject.prototype.baseUpdate = function(deltaTime) {
   // Updates all its children
   _.forEach(_.filter(this.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
 
-  // Calls all update scripts
-  CallAllScriptsWithFunction(this.scripts, "update", this,  deltaTime);
+  // Calls all update from components
+  CallAllComponentsWithFunction(this.components, "update", this,  deltaTime);
   setObject3dTransform(this, this.transform);
 };
 
 // Helper
-function CallAllScriptsWithFunction(scripts, name, ...params) {
-  _.each(scripts, (script) => {
+function CallAllComponentsWithFunction(components, name, ...params) {
+  _.each(components, (script) => {
     if(_.has(script, name))
       script[name](...params);
   });
