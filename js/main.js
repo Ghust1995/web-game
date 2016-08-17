@@ -6,7 +6,9 @@ const $ = require('jquery');
 const Detector = require('../libraries/Detector');
 const Stats = require('../libraries/Stats');
 
-var container, mainCamera, renderer, controls, stats, hierarchy, gLight;
+const MeshComponent = require('./components/Mesh');
+
+var container, mainCamera, renderer, controls, stats, hierarchy;
 var clock = new THREE.Clock();
 
 INIT_SPECS = {
@@ -86,76 +88,106 @@ rawHierarchy = {
       rotation: new THREE.Euler(0, 0, 0),
       scale: new THREE.Vector3(1, 1, 1)
     },
-    mesh: {
-      geometry: {
-      type: THREE.SphereGeometry,
-      params: [10, 32, 32]
-      },
-      material: {
-        type: THREE.MeshPhongMaterial,
-        params: {
-          color: 0x00a9ff
-        }
-      }
-    },
-    components: [{
-        speed: 5,
+    components: [
+      {
+        linSpeed: 80,
+        angSpeed: 4,
         update: function(go, deltaTime) {
-          var z = (Input.isDown(Input.Keys.UP) ? -1 : 0) + (Input.isDown(Input.Keys.DOWN) ? 1 : 0);
-          var x = (Input.isDown(Input.Keys.RIGHT) ? 1 : 0) + (Input.isDown(Input.Keys.LEFT) ? -1 : 0);
-          var velocity = new THREE.Vector3(x, 0, z);
-          go.transform.position.add(velocity);
+          var vert = (Input.isDown(Input.Keys.UP) ? 1 : 0) + (Input.isDown(Input.Keys.DOWN) ? -1 : 0);
+          var horz = (Input.isDown(Input.Keys.RIGHT) ? 1 : 0) + (Input.isDown(Input.Keys.LEFT) ? -1 : 0);
+          var linVelocity = new THREE.Vector3(0, 0, this.linSpeed * vert * deltaTime);
+          var angDelta = this.angSpeed * horz * deltaTime;
+          go.transform.rotation.y -= angDelta;
+          linVelocity.applyAxisAngle(new THREE.Vector3(0, 1, 0), go.transform.rotation.y);
+          go.transform.position.add(linVelocity);
         }
       },
       {
-      velocity: new THREE.Vector3(0, 0, 0),
-      update: function(go, deltaTime) {
-        go.transform.position.add(this.velocity);
-        this.velocity.add(new THREE.Vector3(0, (-35) * deltaTime, 0));
-        if(go.transform.position.y < 32 && this.velocity.y < 0)
-          this.velocity.y = 0.0;
+        velocity: new THREE.Vector3(0, 0, 0),
+        update: function(go, deltaTime) {
+          if(Input.isPressed(Input.Keys.SPACE)) {
+            this.velocity.set(0, 5, 0);
+          }
+          go.transform.position.add(this.velocity);
+          this.velocity.add(new THREE.Vector3(0, (-35) * deltaTime, 0));
+          if(go.transform.position.y < 32 && this.velocity.y < 0)
+            this.velocity.y = 0.0;
+        }
       }
-    }],
+    ],
     children: {
       Sword: {
         transform: {
-          position: new THREE.Vector3(-10, 32, 0),
-          rotation: new THREE.Euler(0, 0, 0),
+          position: new THREE.Vector3(-20, 0, 30),
+          rotation: new THREE.Euler(Math.PI/2, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
-        mesh: {
-          geometry: {
-          type: THREE.BoxGeometry,
-          params: [1, 50, 1]
+        components: [
+          new MeshComponent({
+            type: THREE.CylinderGeometry,
+            params: [1, 5, 60]
           },
-          material: {
+          {
             type: THREE.MeshPhongMaterial,
             params: {
               color: 0xFFFFFF
             }
-          }
-        }
+          }),
+        ],
       },
-      Potato: {
+      Shield: {
         transform: {
-          position: new THREE.Vector3(0, 32, 0),
+          position: new THREE.Vector3(20, 0, 20),
+          rotation: new THREE.Euler(Math.PI/2, 0, 0),
+          scale: new THREE.Vector3(1, 1, 1)
+        },
+        components: [
+          new MeshComponent({
+            type: THREE.CylinderGeometry,
+            params: [10, 10, 5]
+          },
+          {
+            type: THREE.MeshPhongMaterial,
+            params: {
+              color: 0xFFFFFF
+            }
+          }),
+        ],
+      },
+      Body: {
+        components: [
+          new MeshComponent({
+            type: THREE.SphereGeometry,
+            params: [20, 32, 32]
+          },
+          {
+            type: THREE.MeshPhongMaterial,
+            params: {
+              color: 0x00f0ff
+            }
+          }),
+        ],
+      },
+      Head: {
+        transform: {
+          position: new THREE.Vector3(0, 30, 0),
           rotation: new THREE.Euler(0, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
-        mesh: {
-          geometry: {
-          type: THREE.SphereGeometry,
-          params: [10, 32, 32]
+        components: [
+          new MeshComponent({
+            type: THREE.SphereGeometry,
+            params: [10, 32, 32]
           },
-          material: {
+          {
             type: THREE.MeshPhongMaterial,
             params: {
-              color: 0x00a900
+              color: 0x00f0ff
             }
-          }
-        }
-      }
-    },
+          }),
+        ],
+      },
+    }
   },
   Skybox: {
     components: [{
@@ -175,15 +207,22 @@ rawHierarchy = {
       rotation: new THREE.Euler(0, 0, 0),
       scale: new THREE.Vector3(1, 1, 1)
     },
-    components: [{
-      totalTime: 0,
-      light: null,
-      init: function(go) {
-        this.light = new THREE.SpotLight(0xffffff, 5.0, 1000, Math.PI/4, 0.5, 2);
-        gLight = this.light;
-        go.add(this.light);
+    components: [
+      {
+        light: null,
+        init: function(go) {
+          this.light = new THREE.SpotLight(0xffffff, 5.0, 1000, Math.PI/4, 0.5, 2);
+          go.add(this.light);
+        }
       },
-    }]
+      {
+        light: null,
+        init: function(go) {
+          this.light = new THREE.AmbientLight(0xffffff, 0.25);
+          go.add(this.light);
+        }
+      },
+    ]
   }
 };
 

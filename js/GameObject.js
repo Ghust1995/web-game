@@ -12,17 +12,11 @@ function GameObject(name, transform, mesh, components, parent) {
     setObject3dTransform(this, transform);
   }
 
+  //TODO: make components an object instead of a list
   this.components = components;
   CallAllComponentsWithFunction(this.components, "init", this);
 
   // Probably hardcode later for easy stuff
-  if(!_.isUndefined(mesh)){
-    var geometry = new mesh.geometry.type(...mesh.geometry.params);
-    var material = new mesh.material.type(mesh.material.params);
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.add(this.mesh);
-  }
-
   parent.add(this);
 }
 
@@ -63,7 +57,7 @@ GameObject.prototype.baseUpdate = function(deltaTime) {
 // Helper
 function CallAllComponentsWithFunction(components, name, ...params) {
   _.each(components, (script) => {
-    if(_.has(script, name))
+    if(_.hasIn(script, name))
       script[name](...params);
   });
 }

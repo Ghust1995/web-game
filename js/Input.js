@@ -35,7 +35,8 @@ Input = {
     UP: 38,
     DOWN: 40,
     LEFT: 37,
-    RIGHT: 39
+    RIGHT: 39,
+    SPACE: 32
   },
 
   // TODO: Can be generated in "Compile Time"
@@ -44,6 +45,7 @@ Input = {
     40: 0x2,
     37: 0x4,
     39: 0x8,
+    32: 0x10
   },
 };
 
