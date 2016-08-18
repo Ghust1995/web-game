@@ -83,7 +83,6 @@ function createHierarchy(rawHierarchy) {
     _.forIn(childrenRaw, function (val, key) {
       var newGO = new GameObject( key,
                                   val.transform,
-                                  val.mesh,
                                   val.components,
                                   parentgo);
 

@@ -1,13 +1,13 @@
 const _ = require('lodash');
 const THREE = require('three');
 
-function GameObject(name, transform, mesh, components, parent) {
+function GameObject(name, transform, components, parent) {
   THREE.Object3D.call(this);
 
   this._nameid = name;
 
   //If transform is not defined, set to default transform
-  if(!_.isUndefined(transform)){
+  if(!_.isUndefined(transform) && !_.isNull(transform)){
     this.transform = transform;
     setObject3dTransform(this, transform);
   }
@@ -47,7 +47,10 @@ setObject3dTransform = function (o3dTo, tFrom) {
 
 GameObject.prototype.baseUpdate = function(deltaTime) {
   // Updates all its children
-  _.forEach(_.filter(this.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
+  _.forEach(
+    _.filter(this.children,
+            (c) => c instanceof GameObject),
+    (go) => go.baseUpdate(deltaTime));
 
   // Calls all update from components
   CallAllComponentsWithFunction(this.components, "update", this, deltaTime);
