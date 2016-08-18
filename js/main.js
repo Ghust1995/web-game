@@ -5,28 +5,22 @@ const $ = require('jquery');
 
 // External modules
 const Detector = require('../libraries/Detector');
-const Stats = require('../libraries/Stats');
 
 // Internal modules
 const Input = require('./Input');
-const GameObject = require('./GameObject');
+const Engine = require('./Engine');
 const MeshComponent = require('./components/Mesh');
 
-// Global variables
-// TODO: Clean as much as possible of this
-// TODO: Future, make most of this file an "engine" module
-var container, mainCamera, renderer, controls, stats, hierarchy;
-var clock = new THREE.Clock();
-
 // Put global initial specifications here
-INIT_SPECS = {
+const INIT_SPECS = {
   SCREEN_WIDTH: 800,
   SCREEN_HEIGHT: 600,
-  SHOW_STATS: true
+  SHOW_STATS: true,
+  CONTAINER_NAME: "WebGLContainer"
 };
 
 // TODO? Populate this at runtime somehow
-THINGS_TO_LOAD = [
+const THINGS_TO_LOAD = [
   {
     name: "fragShader",
     path: "/shaders/test.frag"
@@ -47,7 +41,7 @@ THINGS_TO_LOAD = [
 
 ];
 // TODO: Give a better name for this. Assets?
-LOADED_STUFF = {};
+var LOADED_STUFF = {};
 
 // rawHierarchy is the initial specification of the scene, this works pretty close to unity
 // Each game object has a transform and components specifications
@@ -57,7 +51,7 @@ LOADED_STUFF = {};
 // MainCamera
 // LOADED_STUFF -> add to each object?
 // TODO: move everything to components (ex.: mesh, light, );
-rawHierarchy = {
+var rawHierarchy = {
   Floor: {
     transform: {
       position: new THREE.Vector3(0, 0, 0),
@@ -190,16 +184,17 @@ rawHierarchy = {
         components: {
           Camera: {
             init: function(go) {
-              specs = {
+              var specs = {
                 VIEW_ANGLE: 45,
                 NEAR: 0.1,
                 FAR: 20000
               };
-              ASPECT = 4/3;
-              mainCamera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-              mainCamera.position.set(0, 100, 300);
-              mainCamera.lookAt(new THREE.Vector3(0, 0, 0));
-              go.add(mainCamera);
+              var ASPECT = 4/3;
+              var camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
+              camera.position.set(0, 100, 300);
+              camera.lookAt(new THREE.Vector3(0, 0, 0));
+              Engine.mainCamera = camera;
+              go.add(camera);
             }
           }
         },
@@ -244,25 +239,7 @@ rawHierarchy = {
   }
 };
 
-// Hierarchy creates a scene and adds everything specified on rawHierarchy
-function createTHREEHierarchy(rawHierarchy) {
-  // Extending scene base to be an Hierarchy
-  // This is basically a scene with GameObject children
-  var hierarchy = new THREE.Scene();
-  // Recursively constructs game objects and add them to their parents;
-  (function createAllChildren(childrenRaw, parentgo) {
-    _.forIn(childrenRaw, function (val, key) {
-      var newGO = new GameObject( key,
-                                  val.transform,
-                                  val.mesh,
-                                  val.components,
-                                  parentgo);
 
-      createAllChildren(val.children, newGO);
-    });
-  })(rawHierarchy, hierarchy);
-  return hierarchy;
-}
 
 window.onload = function() {
   // Verifies if the browser supports webgl
@@ -272,8 +249,8 @@ window.onload = function() {
   loadStuff(THINGS_TO_LOAD).then(values => {
     // Populates LOADED_STUFF "global" variable
     values.forEach(v => LOADED_STUFF[v.name] = v.data);
-    init();
-    animate();
+    Engine.init(rawHierarchy, INIT_SPECS);
+    Engine.animate();
   });
 };
 
@@ -293,46 +270,4 @@ function loadStuff(thingsToLoad) {
     });
   });
   return Promise.all(promises);
-}
-
-function init() {
-  // Creates the hierarchy
-  hierarchy = createTHREEHierarchy(rawHierarchy);
-
-  //We create the WebGL renderer and add it to the document
-  renderer = new THREE.WebGLRenderer( { antialias:true });
-  renderer.setSize( INIT_SPECS.SCREEN_WIDTH, INIT_SPECS.SCREEN_HEIGHT );
-  container = document.getElementById("WebGLContainer");
-  container.appendChild( renderer.domElement );
-
-  // Stats display
-  if(INIT_SPECS.SHOW_STATS) {
-    stats = new Stats();
-  	stats.domElement.style.position = 'absolute';
-  	stats.domElement.style.top = '0px';
-  	stats.domElement.style.zIndex = 100;
-  	container.appendChild( stats.domElement );
-  }
-
-  //Input
-  Input.registerKeys();
-}
-
-// Works as the main loop
-// Might be weird for advanced physics and collisions that require fixed time updates
-// Study better fixed loose time architecture
-function animate() {
-  requestAnimationFrame(animate);
-  // Renders the scene (hierarchy), viewed by the main camera
-  renderer.render(hierarchy, mainCamera);
-  update();
-}
-
-function update() {
-  var deltaTime = clock.getDelta();
-  // TODO? Make scene a game object so we only need do call scene.update
-  _.forEach(_.filter(hierarchy.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
-
-  Input.update();
-  stats.update();
 }
