@@ -55,7 +55,6 @@ LOADED_STUFF = {};
 // TODO: move to another file
 // Dependecies to remove: (stuff to make global / static)
 // MainCamera
-// Input
 // LOADED_STUFF -> add to each object?
 // TODO: move everything to components (ex.: mesh, light, );
 rawHierarchy = {
@@ -65,18 +64,20 @@ rawHierarchy = {
       rotation: new THREE.Euler(Math.PI / 2, 0, 0),
       scale: new THREE.Vector3(1, 1, 1)
     },
-    components:[{
-      init: function(go) {
-        LOADED_STUFF.floorTexture.wrapS = LOADED_STUFF.floorTexture.wrapT = THREE.RepeatWrapping;
-      	LOADED_STUFF.floorTexture.repeat.set( 10, 10 );
-      	var floorMaterial = new THREE.MeshPhongMaterial( { map: LOADED_STUFF.floorTexture, side: THREE.DoubleSide } );
-      	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-      	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-      	//floor.position.y = -100;
-      	//floor.rotation.x = Math.PI / 2;
-      	go.add(floor);
+    components: {
+      FloorMesh : {
+        init: function(go) {
+          LOADED_STUFF.floorTexture.wrapS = LOADED_STUFF.floorTexture.wrapT = THREE.RepeatWrapping;
+        	LOADED_STUFF.floorTexture.repeat.set( 10, 10 );
+        	var floorMaterial = new THREE.MeshPhongMaterial( { map: LOADED_STUFF.floorTexture, side: THREE.DoubleSide } );
+        	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+        	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        	//floor.position.y = -100;
+        	//floor.rotation.x = Math.PI / 2;
+        	go.add(floor);
+        }
       }
-    }]
+    }
   },
   Player: {
     transform: {
@@ -84,8 +85,8 @@ rawHierarchy = {
       rotation: new THREE.Euler(0, 0, 0),
       scale: new THREE.Vector3(1, 1, 1)
     },
-    components: [
-      {
+    components: {
+      PlayerController: {
         linSpeed: 80,
         angSpeed: 4,
         update: function(go, deltaTime) {
@@ -98,7 +99,7 @@ rawHierarchy = {
           go.transform.position.add(linVelocity);
         }
       },
-      {
+      Gravity: {
         velocity: new THREE.Vector3(0, 0, 0),
         update: function(go, deltaTime) {
           if(Input.isPressed(Input.Keys.SPACE)) {
@@ -110,7 +111,7 @@ rawHierarchy = {
             this.velocity.y = 0.0;
         }
       }
-    ],
+    },
     children: {
       Sword: {
         transform: {
@@ -118,8 +119,8 @@ rawHierarchy = {
           rotation: new THREE.Euler(-Math.PI/2, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
-        components: [
-          new MeshComponent({
+        components: {
+          Mesh: new MeshComponent({
             type: THREE.CylinderGeometry,
             params: [1, 5, 60]
           },
@@ -129,7 +130,7 @@ rawHierarchy = {
               color: 0xFFFFFF
             }
           }),
-        ],
+        },
       },
       Shield: {
         transform: {
@@ -137,8 +138,8 @@ rawHierarchy = {
           rotation: new THREE.Euler(Math.PI/2, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
-        components: [
-          new MeshComponent({
+        components: {
+          Mesh: new MeshComponent({
             type: THREE.CylinderGeometry,
             params: [10, 10, 5]
           },
@@ -148,21 +149,22 @@ rawHierarchy = {
               color: 0xFFFFFF
             }
           }),
-        ],
+        },
       },
       Body: {
-        components: [
-          new MeshComponent({
-            type: THREE.SphereGeometry,
-            params: [20, 32, 32]
-          },
-          {
-            type: THREE.MeshPhongMaterial,
-            params: {
-              color: Math.random() * 0xFFFFFF
+        components: {
+          Mesh: new MeshComponent({
+              type: THREE.SphereGeometry,
+              params: [20, 32, 32]
+            },
+            {
+              type: THREE.MeshPhongMaterial,
+              params: {
+                color: Math.random() * 0xFFFFFF
+              }
             }
-          }),
-        ],
+          ),
+        },
       },
       Head: {
         transform: {
@@ -170,48 +172,52 @@ rawHierarchy = {
           rotation: new THREE.Euler(0, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
-        components: [
-          new MeshComponent({
-            type: THREE.SphereGeometry,
-            params: [10, 32, 32]
-          },
-          {
-            type: THREE.MeshPhongMaterial,
-            params: {
-              color: Math.random() * 0xFFFFFF
+        components: {
+          Mesh: new MeshComponent({
+              type: THREE.SphereGeometry,
+              params: [10, 32, 32]
+            },
+            {
+              type: THREE.MeshPhongMaterial,
+              params: {
+                color: Math.random() * 0xFFFFFF
+              }
             }
-          }),
-        ],
+          ),
+        },
       },
       Camera: {
-        components:[{
-          init: function(go) {
-            specs = {
-              VIEW_ANGLE: 45,
-              NEAR: 0.1,
-              FAR: 20000
-            };
-            ASPECT = 4/3;
-            mainCamera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-            mainCamera.position.set(0, 100, 300);
-            mainCamera.lookAt(new THREE.Vector3(0, 0, 0));
-            go.add(mainCamera);
+        components: {
+          Camera: {
+            init: function(go) {
+              specs = {
+                VIEW_ANGLE: 45,
+                NEAR: 0.1,
+                FAR: 20000
+              };
+              ASPECT = 4/3;
+              mainCamera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
+              mainCamera.position.set(0, 100, 300);
+              mainCamera.lookAt(new THREE.Vector3(0, 0, 0));
+              go.add(mainCamera);
+            }
           }
-        }],
+        },
       },
     }
   },
   Skybox: {
-    components: [{
-      init: function(go) {
-        // make sure the camera's "far" value is large enough so that it will render the skyBox!
-      	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
-      	// BackSide: render faces from inside of the cube, instead of from outside (default).
-      	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000055, side: THREE.BackSide } );
-      	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-      	go.add(skyBox);
-      }
-    }]
+    components: {
+      Mesh: new MeshComponent({
+          type: THREE.CubeGeometry,
+          params: [10000, 10000, 10000]
+        },
+        {
+          type: THREE.MeshBasicMaterial,
+          params: { color: 0xAA419D, side: THREE.BackSide }
+        }
+      )
+    }
   },
   Light: {
     transform: {
@@ -219,22 +225,22 @@ rawHierarchy = {
       rotation: new THREE.Euler(0, 0, 0),
       scale: new THREE.Vector3(1, 1, 1)
     },
-    components: [
-      {
+    components: {
+      SpotLight: {
         light: null,
         init: function(go) {
           this.light = new THREE.SpotLight(0xffffff, 5.0, 1000, Math.PI/4, 0.5, 2);
           go.add(this.light);
         }
       },
-      {
+      AmbientLight: {
         light: null,
         init: function(go) {
-          this.light = new THREE.AmbientLight(0xffffff, 0.25);
+          this.light = new THREE.AmbientLight(0xFF00FF, 0.25);
           go.add(this.light);
         }
       },
-    ]
+    }
   }
 };
 

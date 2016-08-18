@@ -57,7 +57,7 @@ GameObject.prototype.baseUpdate = function(deltaTime) {
 
 // Helper
 function CallAllComponentsWithFunction(components, name, ...params) {
-  _.each(components, (script) => {
+  _.each(_.values(components), (script) => {
     if(_.hasIn(script, name))
       script[name](...params);
   });
