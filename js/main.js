@@ -9,6 +9,8 @@ const Detector = require('../libraries/Detector');
 // Internal modules
 const Input = require('./Input');
 const Engine = require('./Engine');
+const AssetLoader = require('./AssetLoader');
+const Assets = AssetLoader.Assets;
 const MeshComponent = require('./components/Mesh');
 
 // Put global initial specifications here
@@ -30,18 +32,11 @@ const THINGS_TO_LOAD = [
     path: "/shaders/test.vert"
   },
   {
-    name: "rawHierarchy",
-    path: "/scenes/test01.js"
-  },
-  {
     loader: THREE.TextureLoader,
     name: "floorTexture",
     path: "/textures/checkerboard.jpg"
   }
-
 ];
-// TODO: Give a better name for this. Assets?
-var LOADED_STUFF = {};
 
 // rawHierarchy is the initial specification of the scene, this works pretty close to unity
 // Each game object has a transform and components specifications
@@ -49,8 +44,7 @@ var LOADED_STUFF = {};
 // TODO: move to another file
 // Dependecies to remove: (stuff to make global / static)
 // MainCamera
-// LOADED_STUFF -> add to each object?
-// TODO: move everything to components (ex.: mesh, light, );
+// Assets -> add to each object?
 var rawHierarchy = {
   Floor: {
     transform: {
@@ -61,9 +55,9 @@ var rawHierarchy = {
     components: {
       FloorMesh : {
         init: function(go) {
-          LOADED_STUFF.floorTexture.wrapS = LOADED_STUFF.floorTexture.wrapT = THREE.RepeatWrapping;
-        	LOADED_STUFF.floorTexture.repeat.set( 10, 10 );
-        	var floorMaterial = new THREE.MeshPhongMaterial( { map: LOADED_STUFF.floorTexture, side: THREE.DoubleSide } );
+          Assets.floorTexture.wrapS = Assets.floorTexture.wrapT = THREE.RepeatWrapping;
+        	Assets.floorTexture.repeat.set( 10, 10 );
+        	var floorMaterial = new THREE.MeshPhongMaterial( { map: Assets.floorTexture, side: THREE.DoubleSide } );
         	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
         	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
         	//floor.position.y = -100;
@@ -239,35 +233,13 @@ var rawHierarchy = {
   }
 };
 
-
-
 window.onload = function() {
   // Verifies if the browser supports webgl
   if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
   // Waits for stuff to be loaded
-  loadStuff(THINGS_TO_LOAD).then(values => {
-    // Populates LOADED_STUFF "global" variable
-    values.forEach(v => LOADED_STUFF[v.name] = v.data);
+  AssetLoader.load(THINGS_TO_LOAD, function() {
     Engine.init(rawHierarchy, INIT_SPECS);
     Engine.animate();
   });
 };
-
-// Loads things specified on THINGS_TO_LOAD
-function loadStuff(thingsToLoad) {
-  var promises = thingsToLoad.map(function(t) {
-    return new Promise(function(resolve, reject) {
-      // Uses a threejs loader if specified (used for textures, geometries)
-      if(t.loader) {
-        var tempLoader = Object.create(t.loader.prototype);
-        tempLoader.load(t.path, (data) => resolve({name: t.name, data: data }));
-      }
-      // Uses jquery otherwise
-      else {
-        $.get(t.path, (data) => resolve({name: t.name, data: data }));
-      }
-    });
-  });
-  return Promise.all(promises);
-}
