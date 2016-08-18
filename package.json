@@ -5,6 +5,7 @@
   "repository": "https://github.com/Ghust1995/",
   "main": "main.js",
   "dependencies": {
+    "firebase": "^3.3.0",
     "jquery": "^3.1.0",
     "lodash": "^4.14.2",
     "three": "^0.79.0"

@@ -5,7 +5,6 @@ const THREE = require('three');
 const $ = require('jquery');
 const Detector = require('../libraries/Detector');
 const Stats = require('../libraries/Stats');
-
 const MeshComponent = require('./components/Mesh');
 
 var container, mainCamera, renderer, controls, stats, hierarchy;
@@ -29,12 +28,12 @@ THINGS_TO_LOAD = [
   },
   {
     name: "rawHierarchy",
-    path: "scenes/test01.js"
+    path: "/scenes/test01.js"
   },
   {
     loader: THREE.TextureLoader,
     name: "floorTexture",
-    path: "textures/checkerboard.jpg"
+    path: "/textures/checkerboard.jpg"
   }
 
 ];
@@ -147,7 +146,7 @@ rawHierarchy = {
           {
             type: THREE.MeshPhongMaterial,
             params: {
-              color: 0x00f0ff
+              color: Math.random() * 0xFFFFFF
             }
           }),
         ],
@@ -166,7 +165,7 @@ rawHierarchy = {
           {
             type: THREE.MeshPhongMaterial,
             params: {
-              color: 0x00f0ff
+              color: Math.random() * 0xFFFFFF
             }
           }),
         ],
@@ -249,6 +248,7 @@ function createTHREEHierarchy(rawHierarchy) {
 
 // Script to run
 window.onload = function() {
+  if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
   loadStuff(THINGS_TO_LOAD).then(values => {
     values.forEach(v => LOADED_STUFF[v.name] = v.data);
     init();
