@@ -7,9 +7,9 @@ const $ = require('jquery');
 const Detector = require('../libraries/Detector');
 
 // Internal modules
-const Input = require('./Input');
-const Engine = require('./Engine');
-const AssetLoader = require('./AssetLoader');
+const Input = require('./engine/Input');
+const Engine = require('./engine/Engine');
+const AssetLoader = require('./engine/AssetLoader');
 const Assets = AssetLoader.Assets;
 const MeshComponent = require('./components/Mesh');
 

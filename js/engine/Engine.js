@@ -3,7 +3,7 @@ const _ = require('lodash');
 const THREE = require('three');
 
 // External modules
-const Stats = require('../libraries/Stats');
+const Stats = require('../../libraries/Stats');
 
 // Internal modules
 const Input = require('./Input');
