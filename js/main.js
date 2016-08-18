@@ -92,6 +92,9 @@ rawHierarchy = {
         update: function(go, deltaTime) {
           var vert = (Input.isDown(Input.Keys.UP) ? 1 : 0) + (Input.isDown(Input.Keys.DOWN) ? -1 : 0);
           var horz = (Input.isDown(Input.Keys.RIGHT) ? 1 : 0) + (Input.isDown(Input.Keys.LEFT) ? -1 : 0);
+          if(Input.isPressed(Input.Keys.SPACE)) {
+            go.components.Gravity.velocity.set(0, 5, 0);
+          }
           var linVelocity = new THREE.Vector3(0, 0, -this.linSpeed * vert * deltaTime);
           var angDelta = this.angSpeed * horz * deltaTime;
           go.transform.rotation.y -= angDelta;
@@ -102,9 +105,6 @@ rawHierarchy = {
       Gravity: {
         velocity: new THREE.Vector3(0, 0, 0),
         update: function(go, deltaTime) {
-          if(Input.isPressed(Input.Keys.SPACE)) {
-            this.velocity.set(0, 5, 0);
-          }
           go.transform.position.add(this.velocity);
           this.velocity.add(new THREE.Vector3(0, (-35) * deltaTime, 0));
           if(go.transform.position.y < 32 && this.velocity.y < 0)
