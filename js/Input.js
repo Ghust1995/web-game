@@ -1,15 +1,21 @@
+// This input class was created to simulate something closer to what Game Engine Architecture says.
+// There is an unnecessary step to make inputs into a number to do bitwise operations
+
 Input = {
   _currentState: 0x0,
   _lastState: 0x0,
 
+  // Checks if key is held
   isDown: function(key) {
     return this.keyBits[key] & this._currentState;
   },
 
+  // Checks if key has just been pressed
   isPressed: function(key) {
       return this.keyBits[key] & (this._currentState & ~this._lastState);
   },
 
+  // Checks if key has just been released
   isReleased: function(key) {
       return (this.keyBits[key] & this._currentState) != (this.keyBits[key] & this._lastState);
   },
@@ -30,7 +36,7 @@ Input = {
     window.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
     window.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
   },
-
+  // TODO: Add more possible keys here (figure keycodes)
   Keys: {
     UP: 38,
     DOWN: 40,

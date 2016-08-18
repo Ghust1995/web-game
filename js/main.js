@@ -1,22 +1,31 @@
-const Input = require('./Input');
-const GameObject = require('./GameObject');
+// Node modules
 const _ = require('lodash');
 const THREE = require('three');
 const $ = require('jquery');
+
+// External modules
 const Detector = require('../libraries/Detector');
 const Stats = require('../libraries/Stats');
+
+// Internal modules
+const Input = require('./Input');
+const GameObject = require('./GameObject');
 const MeshComponent = require('./components/Mesh');
 
+// Global variables
+// TODO: Clean as much as possible of this
+// TODO: Future, make most of this file an "engine" module
 var container, mainCamera, renderer, controls, stats, hierarchy;
 var clock = new THREE.Clock();
 
+// Put global initial specifications here
 INIT_SPECS = {
   SCREEN_WIDTH: 800,
   SCREEN_HEIGHT: 600,
   SHOW_STATS: true
 };
 
-//Loading stuff
+// TODO? Populate this at runtime somehow
 THINGS_TO_LOAD = [
   {
     name: "fragShader",
@@ -37,14 +46,18 @@ THINGS_TO_LOAD = [
   }
 
 ];
+// TODO: Give a better name for this. Assets?
 LOADED_STUFF = {};
 
+// rawHierarchy is the initial specification of the scene, this works pretty close to unity
+// Each game object has a transform and components specifications
+// If there is a reusable component, move it to a component module (see meshComponent)
 // TODO: move to another file
 // Dependecies to remove: (stuff to make global / static)
 // MainCamera
 // Input
 // LOADED_STUFF -> add to each object?
-// TODO: move everything to components (mesh);
+// TODO: move everything to components (ex.: mesh, light, );
 rawHierarchy = {
   Floor: {
     transform: {
@@ -225,62 +238,59 @@ rawHierarchy = {
   }
 };
 
-function createAllChildren(childrenRaw, parentgo) {
-  _.forIn(childrenRaw, function (val, key) {
-    var newGO = new GameObject( key,
-                                val.transform,
-                                val.mesh,
-                                val.components,
-                                parentgo);
-
-    createAllChildren(val.children, newGO);
-  });
-}
-// Hierarchy creates a scene and adds everything specified on rawrawHierarchy
+// Hierarchy creates a scene and adds everything specified on rawHierarchy
 function createTHREEHierarchy(rawHierarchy) {
   // Extending scene base to be an Hierarchy
   // This is basically a scene with GameObject children
   var hierarchy = new THREE.Scene();
-  createAllChildren(rawHierarchy, hierarchy);
+  // Recursively constructs game objects and add them to their parents;
+  (function createAllChildren(childrenRaw, parentgo) {
+    _.forIn(childrenRaw, function (val, key) {
+      var newGO = new GameObject( key,
+                                  val.transform,
+                                  val.mesh,
+                                  val.components,
+                                  parentgo);
+
+      createAllChildren(val.children, newGO);
+    });
+  })(rawHierarchy, hierarchy);
   return hierarchy;
 }
 
-
-// Script to run
 window.onload = function() {
+  // Verifies if the browser supports webgl
   if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+  // Waits for stuff to be loaded
   loadStuff(THINGS_TO_LOAD).then(values => {
+    // Populates LOADED_STUFF "global" variable
     values.forEach(v => LOADED_STUFF[v.name] = v.data);
     init();
     animate();
   });
 };
 
-// Funtion definitions
+// Loads things specified on THINGS_TO_LOAD
 function loadStuff(thingsToLoad) {
   var promises = thingsToLoad.map(function(t) {
     return new Promise(function(resolve, reject) {
-
+      // Uses a threejs loader if specified (used for textures, geometries)
       if(t.loader) {
         var tempLoader = Object.create(t.loader.prototype);
         tempLoader.load(t.path, (data) => resolve({name: t.name, data: data }));
       }
+      // Uses jquery otherwise
       else {
         $.get(t.path, (data) => resolve({name: t.name, data: data }));
       }
-
     });
   });
   return Promise.all(promises);
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(hierarchy, mainCamera);
-  update();
-}
-
 function init() {
+  // Creates the hierarchy
   hierarchy = createTHREEHierarchy(rawHierarchy);
 
   //We create the WebGL renderer and add it to the document
@@ -302,11 +312,21 @@ function init() {
   Input.registerKeys();
 }
 
+// Works as the main loop
+// Might be weird for advanced physics and collisions that require fixed time updates
+// Study better fixed loose time architecture
+function animate() {
+  requestAnimationFrame(animate);
+  // Renders the scene (hierarchy), viewed by the main camera
+  renderer.render(hierarchy, mainCamera);
+  update();
+}
+
 function update() {
   var deltaTime = clock.getDelta();
-  // Make scene a game object so we only need do call scene?
+  // TODO? Make scene a game object so we only need do call scene.update
   _.forEach(_.filter(hierarchy.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
 
-	stats.update();
   Input.update();
+  stats.update();
 }

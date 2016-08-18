@@ -16,7 +16,6 @@ function GameObject(name, transform, mesh, components, parent) {
   this.components = components;
   CallAllComponentsWithFunction(this.components, "init", this);
 
-  // Probably hardcode later for easy stuff
   parent.add(this);
 }
 
@@ -39,6 +38,8 @@ GameObject.prototype = Object.create(THREE.Object3D.prototype, {
 
 GameObject.prototype.constructor = GameObject;
 
+// Weird workaround to put stuff inside transform
+// TODO: Make this in a better way or ignore
 setObject3dTransform = function (o3dTo, tFrom) {
   o3dTo.position.copy(tFrom.position);
   o3dTo.rotation.copy(tFrom.rotation);
@@ -50,7 +51,7 @@ GameObject.prototype.baseUpdate = function(deltaTime) {
   _.forEach(_.filter(this.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
 
   // Calls all update from components
-  CallAllComponentsWithFunction(this.components, "update", this,  deltaTime);
+  CallAllComponentsWithFunction(this.components, "update", this, deltaTime);
   setObject3dTransform(this, this.transform);
 };
 
