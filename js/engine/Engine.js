@@ -8,8 +8,18 @@ const Stats = require('../../libraries/Stats');
 // Internal modules
 const Input = require('./Input');
 const GameObject = require('./GameObject');
+const AssetLoader = require('./AssetLoader');
 
 Engine = {
+  // TODO: get thing to load from hierarchy
+  run: function(rawHierarchy, thingsToLoad, initSpecs) {
+    // Waits for stuff to be loaded
+    AssetLoader.load(thingsToLoad, function() {
+      this.init(rawHierarchy, initSpecs);
+      this.animate();
+    }.bind(this));
+  },
+
   init: function(rawHierarchy, initSpecs) {
     // Set specifications
     this.specs = initSpecs;

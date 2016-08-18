@@ -9,8 +9,7 @@ const Detector = require('../libraries/Detector');
 // Internal modules
 const Input = require('./engine/Input');
 const Engine = require('./engine/Engine');
-const AssetLoader = require('./engine/AssetLoader');
-const Assets = AssetLoader.Assets;
+const Assets = require('./engine/AssetLoader').Assets;
 const MeshComponent = require('./components/Mesh');
 
 // Put global initial specifications here
@@ -38,14 +37,14 @@ const THINGS_TO_LOAD = [
   }
 ];
 
-// rawHierarchy is the initial specification of the scene, this works pretty close to unity
+// RAW_HIERARCHY is the initial specification of the scene, this works pretty close to unity
 // Each game object has a transform and components specifications
 // If there is a reusable component, move it to a component module (see meshComponent)
 // TODO: move to another file
 // Dependecies to remove: (stuff to make global / static)
 // MainCamera
 // Assets -> add to each object?
-var rawHierarchy = {
+const RAW_HIERARCHY = {
   Floor: {
     transform: {
       position: new THREE.Vector3(0, 0, 0),
@@ -236,10 +235,5 @@ var rawHierarchy = {
 window.onload = function() {
   // Verifies if the browser supports webgl
   if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
-  // Waits for stuff to be loaded
-  AssetLoader.load(THINGS_TO_LOAD, function() {
-    Engine.init(rawHierarchy, INIT_SPECS);
-    Engine.animate();
-  });
+  Engine.run(RAW_HIERARCHY, THINGS_TO_LOAD, INIT_SPECS);
 };
