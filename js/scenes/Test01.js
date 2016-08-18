@@ -1,12 +1,31 @@
 // Node modules
 const _ = require('lodash');
 const THREE = require('three');
+const firebase = require('firebase');
 
-// Internal modules
+// Engine modules
 const Input = require('../engine/Input');
 const Engine = require('../engine/Engine');
 const Assets = require('../engine/AssetLoader').Assets;
+const GameObject = require('../engine/GameObject');
+
+// Components
 const MeshComponent = require('../components/Mesh');
+
+FirebaseManager = {
+  init: function(go) {
+      var config = {
+        apiKey: "AIzaSyAqHGwQN2J5BHniiZG0RtrFMHmQRDAKWCQ",
+        authDomain: "multiplayer-2108d.firebaseapp.com",
+        databaseURL: "https://multiplayer-2108d.firebaseio.com",
+        storageBucket: "multiplayer-2108d.appspot.com",
+      };
+      firebase.initializeApp(config);
+      this.database = firebase.database();
+  }
+};
+
+FirebaseManager.init();
 
 module.exports = {
   Floor: {
@@ -36,6 +55,31 @@ module.exports = {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
+      NetworkPlayer: {
+        init: function(go) {
+          var infoKey = FirebaseManager.database.ref("players").push({transform: {
+            position: {
+              x: go.transform.position.x,
+              y: go.transform.position.y,
+              z: go.transform.position.z
+            }
+          }}).key;
+          (function UpdateDB(go){
+            FirebaseManager.database.ref("players/" + infoKey).update({transform: {
+              position: {
+                x: go.transform.position.x,
+                y: go.transform.position.y,
+                z: go.transform.position.z
+              }
+            }}).then(function() {
+              setTimeout(UpdateDB(go), 50);
+            });
+          }.bind(this))(go);
+        },
+        update: function(go, deltaTime) {
+
+        }
+      },
       PlayerController: {
         linSpeed: 80,
         angSpeed: 4,
@@ -191,6 +235,63 @@ module.exports = {
           go.add(this.light);
         }
       },
+    }
+  },
+  NetworkPlayers: {
+    components: {
+      NetworkPlayers: {
+        init: function(go) {
+          var getNetPlayer = function(data) {
+            var val = data.val();
+            var pos = val.transform.position;
+            new GameObject(
+                      "playerNetwork_" + data.key,
+                      {
+                        position: new THREE.Vector3(pos.x, pos.y, pos.z),
+                        rotation: new THREE.Euler(0, 0, 0),
+                        scale: new THREE.Vector3(1, 1, 1)
+                      }, {
+                        NetTransform: {
+                          hasNewTransform: false,
+                          newTransform: {
+                            position: new THREE.Vector3(0, 0, 0),
+                          },
+                          update: function(go, deltaTime) {
+                            if(this.hasNewTransform) {
+                              var pos = this.newTransform.position;
+                              go.transform.position.set(pos.x, pos.y, pos.z);
+                              this.hasNewTransform = false;
+                            }
+                          }
+                        },
+                        Mesh: new MeshComponent({
+                            type: THREE.SphereGeometry,
+                            params: [20, 32, 32]
+                          },
+                          {
+                            type: THREE.MeshPhongMaterial,
+                            params: {
+                              color: Math.random() * 0xFFFFFF
+                            }
+                          }
+                        ),
+                      }, go);
+          };
+
+          var updateNetPlayer = function(data) {
+            var val = data.val();
+            var pos = val.transform.position;
+            var player = _.find(go.children, (c) => c._nameid === "playerNetwork_" + data.key);
+            player.components.NetTransform.hasNewTransform = true;
+            player.components.NetTransform.newTransform = {
+              position: new THREE.Vector3(pos.x, pos.y, pos.z),
+            };
+          };
+
+          FirebaseManager.database.ref("players").limitToLast(10).on('child_added', getNetPlayer);
+          FirebaseManager.database.ref("players").limitToLast(10).on('child_changed', updateNetPlayer);
+        }
+      }
     }
   }
 };
