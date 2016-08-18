@@ -28,7 +28,7 @@ Engine = {
     this.clock = new THREE.Clock();
 
     // Creates the hierarchy
-    this.hierarchy = createTHREEHierarchy(rawHierarchy);
+    this.hierarchy = createHierarchy(rawHierarchy);
 
     //We create the WebGL renderer and add it to the document
     this.renderer = new THREE.WebGLRenderer( { antialias:true });
@@ -73,7 +73,7 @@ Engine = {
 };
 
 // Hierarchy creates a scene and adds everything specified on rawHierarchy
-function createTHREEHierarchy(rawHierarchy) {
+function createHierarchy(rawHierarchy) {
   // Extending scene base to be an Hierarchy
   // This is basically a scene with GameObject children
   var hierarchy = new THREE.Scene();
