@@ -12,7 +12,6 @@ function GameObject(name, transform, mesh, components, parent) {
     setObject3dTransform(this, transform);
   }
 
-  //TODO: make components an object instead of a list
   this.components = components;
   CallAllComponentsWithFunction(this.components, "init", this);
 

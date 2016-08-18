@@ -7,7 +7,6 @@ function Mesh(geometry, material) {
 
 Mesh.prototype.init = function (go) {
   // should add global reference?
-  // TODO: should do this another way?
   var mesh = new THREE.Mesh(this.geometry, this.material);
   go.add(mesh);
 };

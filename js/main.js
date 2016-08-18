@@ -37,10 +37,7 @@ const THINGS_TO_LOAD = [
 // RAW_HIERARCHY is the initial specification of the scene, this works pretty close to unity
 // Each game object has a transform and components specifications
 // If there is a reusable component, move it to a component module (see meshComponent)
-// TODO: move to another file
-// Dependecies to remove: (stuff to make global / static)
-// MainCamera
-// Assets -> add to each object?
+// See scenes/Test01
 const RAW_HIERARCHY = require("./scenes/Test01");
 
 window.onload = function() {

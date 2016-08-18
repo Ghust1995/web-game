@@ -11,7 +11,8 @@ const GameObject = require('./GameObject');
 const AssetLoader = require('./AssetLoader');
 
 Engine = {
-  // TODO: get thing to load from hierarchy
+  // TODO? Generate things to load from hierarchy
+  // Compile time? or Run Time?
   run: function(rawHierarchy, thingsToLoad, initSpecs) {
     // Waits for stuff to be loaded
     AssetLoader.load(thingsToLoad, function() {

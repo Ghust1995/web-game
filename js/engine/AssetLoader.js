@@ -6,6 +6,7 @@ AssetLoader = {
   Assets: {},
   // Loads things specified on THINGS_TO_LOAD
   // TODO: Add some support for progress (see threejs loaders)
+  // TODO: Add suport for initial configuration on things (thing.init)
   load: function(thingsToLoad, callback) {
     var promises = thingsToLoad.map(function(t) {
       return new Promise(function(resolve, reject) {

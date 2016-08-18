@@ -18,7 +18,7 @@ module.exports = {
     components: {
       FloorMesh : {
         init: function(go) {
-          // TODO: move this to loader
+          //TODO: Initial Configuration in loader (see loader todos)
           Assets.floorTexture.wrapS = Assets.floorTexture.wrapT = THREE.RepeatWrapping;
         	Assets.floorTexture.repeat.set( 10, 10 );
         	var floorMaterial = new THREE.MeshPhongMaterial( { map: Assets.floorTexture, side: THREE.DoubleSide } );
