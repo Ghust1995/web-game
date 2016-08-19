@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const THREE = require('three');
 const firebase = require('firebase');
+const $ = require('jquery');
 
 // Engine modules
 const Input = require('../engine/Input');
@@ -57,27 +58,26 @@ module.exports = {
     components: {
       NetworkPlayer: {
         init: function(go) {
-          var infoKey = FirebaseManager.database.ref("players").push({transform: {
+          this.infoKey = FirebaseManager.database.ref("players").push({transform: {
             position: {
               x: go.transform.position.x,
               y: go.transform.position.y,
               z: go.transform.position.z
             }
           }}).key;
+          FirebaseManager.database.ref("players/" + this.infoKey).onDisconnect().remove();
+        },
+        update: function(go, deltaTime) {
+
           (function UpdateDB(go){
-            FirebaseManager.database.ref("players/" + infoKey).update({transform: {
+            FirebaseManager.database.ref("players/" + this.infoKey).update({transform: {
               position: {
                 x: go.transform.position.x,
                 y: go.transform.position.y,
                 z: go.transform.position.z
               }
-            }}).then(function() {
-              setTimeout(UpdateDB(go), 50);
-            });
+            }});
           }.bind(this))(go);
-        },
-        update: function(go, deltaTime) {
-
         }
       },
       PlayerController: {
@@ -260,6 +260,7 @@ module.exports = {
                             if(this.hasNewTransform) {
                               var pos = this.newTransform.position;
                               go.transform.position.set(pos.x, pos.y, pos.z);
+                              // TODO: lerp
                               this.hasNewTransform = false;
                             }
                           }
