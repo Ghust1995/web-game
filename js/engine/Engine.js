@@ -9,6 +9,7 @@ const Stats = require('../../libraries/Stats');
 const Input = require('./Input');
 const GameObject = require('./GameObject');
 const AssetLoader = require('./AssetLoader');
+const FirebaseManager = require('./FirebaseManager');
 
 Engine = {
   // TODO? Generate things to load from hierarchy
@@ -22,6 +23,9 @@ Engine = {
   },
 
   init: function(rawHierarchy, initSpecs) {
+    // Start connection with Firebase
+    FirebaseManager.init();
+
     // Set specifications
     this.specs = initSpecs;
 

@@ -7,26 +7,13 @@ const $ = require('jquery');
 // Engine modules
 const Input = require('../engine/Input');
 const Engine = require('../engine/Engine');
+const FirebaseManager = require('../engine/FirebaseManager');
 const Assets = require('../engine/AssetLoader').Assets;
 const GameObject = require('../engine/GameObject');
 
 // Components
 const MeshComponent = require('../components/Mesh');
-
-FirebaseManager = {
-  init: function(go) {
-      var config = {
-        apiKey: "AIzaSyAqHGwQN2J5BHniiZG0RtrFMHmQRDAKWCQ",
-        authDomain: "multiplayer-2108d.firebaseapp.com",
-        databaseURL: "https://multiplayer-2108d.firebaseio.com",
-        storageBucket: "multiplayer-2108d.appspot.com",
-      };
-      firebase.initializeApp(config);
-      this.database = firebase.database();
-  }
-};
-
-FirebaseManager.init();
+const NetworkTransformComponent = require('../components/NetworkTransform');
 
 module.exports = {
   Floor: {
@@ -56,30 +43,7 @@ module.exports = {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      NetworkPlayer: {
-        init: function(go) {
-          this.infoKey = FirebaseManager.database.ref("players").push({transform: {
-            position: {
-              x: go.transform.position.x,
-              y: go.transform.position.y,
-              z: go.transform.position.z
-            }
-          }}).key;
-          FirebaseManager.database.ref("players/" + this.infoKey).onDisconnect().remove();
-        },
-        update: function(go, deltaTime) {
-
-          (function UpdateDB(go){
-            FirebaseManager.database.ref("players/" + this.infoKey).update({transform: {
-              position: {
-                x: go.transform.position.x,
-                y: go.transform.position.y,
-                z: go.transform.position.z
-              }
-            }});
-          }.bind(this))(go);
-        }
-      },
+      NetworkTransform: new NetworkTransformComponent("players"),
       PlayerController: {
         linSpeed: 80,
         angSpeed: 4,
@@ -240,52 +204,58 @@ module.exports = {
   NetworkPlayers: {
     components: {
       NetworkPlayers: {
+        PLAYER_LIMIT: 10,
         init: function(go) {
           var getNetPlayer = function(data) {
             var val = data.val();
             var pos = val.transform.position;
             new GameObject(
-                      "playerNetwork_" + data.key,
-                      {
-                        position: new THREE.Vector3(pos.x, pos.y, pos.z),
-                        rotation: new THREE.Euler(0, 0, 0),
-                        scale: new THREE.Vector3(1, 1, 1)
-                      }, {
-                        NetTransform: {
-                          hasNewTransform: false,
-                          newTransform: {
-                            position: new THREE.Vector3(0, 0, 0),
-                          },
-                          update: function(go, deltaTime) {
-                            if(this.hasNewTransform) {
-                              var pos = this.newTransform.position;
-                              go.transform.position.set(pos.x, pos.y, pos.z);
-                              // TODO: lerp
-                              this.hasNewTransform = false;
-                            }
-                          }
-                        },
-                        Mesh: new MeshComponent({
-                            type: THREE.SphereGeometry,
-                            params: [20, 32, 32]
-                          },
-                          {
-                            type: THREE.MeshPhongMaterial,
-                            params: {
-                              color: Math.random() * 0xFFFFFF
-                            }
-                          }
-                        ),
-                      }, go);
+                "playerNetwork_" + data.key,
+                {
+                  position: new THREE.Vector3(pos.x, pos.y, pos.z),
+                  rotation: new THREE.Euler(0, 0, 0),
+                  scale: new THREE.Vector3(1, 1, 1)
+                }, {
+                  NetworkTransform: {
+                    hasNewTransform: false,
+                    newTransform: {
+                      position: new THREE.Vector3(0, 0, 0),
+                    },
+                    update: function(go, deltaTime) {
+                      if(this.hasNewTransform) {
+                        go.transform.position.copy(this.newTransform.position);
+                        go.transform.rotation.copy(this.newTransform.rotation);
+                        go.transform.scale.copy(this.newTransform.scale);
+                        // TODO: lerp
+                        this.hasNewTransform = false;
+                      }
+                    }
+                  },
+                  Mesh: new MeshComponent({
+                      type: THREE.SphereGeometry,
+                      params: [20, 32, 32]
+                    },
+                    {
+                      type: THREE.MeshPhongMaterial,
+                      params: {
+                        color: Math.random() * 0xFFFFFF
+                      }
+                    }
+                  ),
+                }, go);
           };
 
           var updateNetPlayer = function(data) {
             var val = data.val();
-            var pos = val.transform.position;
+            var position = val.transform.position;
+            var scale = val.transform.scale;
+            var rotation = val.transform.rotation;
             var player = _.find(go.children, (c) => c._nameid === "playerNetwork_" + data.key);
-            player.components.NetTransform.hasNewTransform = true;
-            player.components.NetTransform.newTransform = {
-              position: new THREE.Vector3(pos.x, pos.y, pos.z),
+            player.components.NetworkTransform.hasNewTransform = true;
+            player.components.NetworkTransform.newTransform = {
+              position: new THREE.Vector3(position.x, position.y, position.z),
+              rotation: new THREE.Euler(rotation.x, rotation.y, rotation.z),
+              scale: new THREE.Vector3(scale.x, scale.y, scale.z)
             };
           };
 
