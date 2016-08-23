@@ -3,8 +3,8 @@ const THREE = require('three');
 
 function GameObject(name, transform, components, parent) {
   THREE.Object3D.call(this);
-
   this._nameid = name;
+  parent.add(this);
 
   //If transform is not defined, set to default transform
   if(!_.isUndefined(transform) && !_.isNull(transform)){
@@ -14,8 +14,6 @@ function GameObject(name, transform, components, parent) {
 
   this.components = components;
   CallAllComponentsWithFunction(this.components, "init", this);
-
-  parent.add(this);
 }
 
 GameObject.prototype = Object.create(THREE.Object3D.prototype, {

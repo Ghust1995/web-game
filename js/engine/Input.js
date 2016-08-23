@@ -1,9 +1,16 @@
 // This input class was created to simulate something closer to what Game Engine Architecture says.
 // There is an unnecessary step to make inputs into a number to do bitwise operations
 
+const _ = require('lodash');
+
 Input = {
   _currentState: 0x0,
   _lastState: 0x0,
+  Mouse: {
+    position: {
+      x: -1, y: -1
+    }
+  },
 
   // Checks if key is held
   isDown: function(key) {
@@ -28,13 +35,24 @@ Input = {
     this._currentState &= ~this.keyBits[key];
   },
 
+  onMouseMove: function( mouseX, mouseY, domElement) {
+  	// calculate mouse position in normalized device coordinates
+  	// (-1 to +1) for both components
+    var rect = domElement.getBoundingClientRect();
+
+  	this.Mouse.position.x = 2*(_.clamp(mouseX, rect.left, rect.right) - rect.left)/rect.width - 1;
+  	this.Mouse.position.y = 1 - 2*(_.clamp(mouseY, rect.top, rect.bottom) - rect.top)/rect.height;
+  },
+
   update: function() {
     this._lastState = this._currentState;
   },
 
-  registerKeys: function() {
+  // TODO: give better name (init?) & better way to pass domELement
+  registerKeys: function(domElement) {
     window.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
     window.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
+    window.addEventListener( 'mousemove', e => this.onMouseMove(e.clientX, e.clientY, domElement), false );
   },
   // TODO: Add more possible keys here (figure keycodes)
   Keys: {

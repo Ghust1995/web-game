@@ -5,15 +5,15 @@ const firebase = require('firebase');
 const $ = require('jquery');
 
 // Engine modules
-const Input = require('../engine/Input');
-const Engine = require('../engine/Engine');
-const FirebaseManager = require('../engine/FirebaseManager');
-const Assets = require('../engine/AssetLoader').Assets;
-const GameObject = require('../engine/GameObject');
+const Input = require('../../engine/Input');
+const Engine = require('../../engine/Engine');
+const FirebaseManager = require('../../engine/FirebaseManager');
+const Assets = require('../../engine/AssetLoader').Assets;
+const GameObject = require('../../engine/GameObject');
 
 // Components
-const MeshComponent = require('../components/Mesh');
-const NetworkTransformComponent = require('../components/NetworkTransform');
+const MeshComponent = require('../../components/Mesh');
+const NetworkTransformComponent = require('../../components/NetworkTransform');
 
 module.exports = {
   Floor: {
@@ -146,7 +146,27 @@ module.exports = {
       },
       Camera: {
         components: {
+          Crosshair: {
+            raycaster: new THREE.Raycaster(),
+            thingsToTest: null,
+            init: function(go) {
+              this.thingsToTest = go.parent.parent.children;
+            },
+            update: function (go, deltaTime) {
+              this.raycaster.setFromCamera( new THREE.Vector2(Input.Mouse.position.x, Input.Mouse.position.y), go.components.Camera.ref );
+              var intersects = this.raycaster.intersectObjects( this.thingsToTest, true );
+              if(intersects.length > 0){
+                var hitScan = intersects[0];
+                hitScan.object.material.color.set(0xFF0000);
+                if(_.startsWith(hitScan._nameid, "playerNetwork_"))
+                  console.log(hitScan._nameid);
+              }
+            }
+          },
+
+          // TODO: Create camera component
           Camera: {
+            ref: null,
             init: function(go) {
               var specs = {
                 VIEW_ANGLE: 45,
@@ -158,6 +178,7 @@ module.exports = {
               camera.position.set(0, 100, 300);
               camera.lookAt(new THREE.Vector3(0, 0, 0));
               Engine.mainCamera = camera;
+              this.ref = camera;
               go.add(camera);
             }
           }
@@ -185,6 +206,7 @@ module.exports = {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
+      // TODO: Create light components
       SpotLight: {
         light: null,
         init: function(go) {
@@ -209,28 +231,14 @@ module.exports = {
           var getNetPlayer = function(data) {
             var val = data.val();
             var pos = val.transform.position;
-            new GameObject(
+            // TODO: Add more support for "prefabs" and extending them ()
+            var BaseGameObject = new GameObject(
                 "playerNetwork_" + data.key,
                 {
                   position: new THREE.Vector3(pos.x, pos.y, pos.z),
                   rotation: new THREE.Euler(0, 0, 0),
                   scale: new THREE.Vector3(1, 1, 1)
                 }, {
-                  NetworkTransform: {
-                    hasNewTransform: false,
-                    newTransform: {
-                      position: new THREE.Vector3(0, 0, 0),
-                    },
-                    update: function(go, deltaTime) {
-                      if(this.hasNewTransform) {
-                        go.transform.position.copy(this.newTransform.position);
-                        go.transform.rotation.copy(this.newTransform.rotation);
-                        go.transform.scale.copy(this.newTransform.scale);
-                        // TODO: lerp
-                        this.hasNewTransform = false;
-                      }
-                    }
-                  },
                   Mesh: new MeshComponent({
                       type: THREE.SphereGeometry,
                       params: [20, 32, 32]
@@ -243,6 +251,22 @@ module.exports = {
                     }
                   ),
                 }, go);
+
+            BaseGameObject.components.ServerNetworkTransform = {
+              hasNewTransform: false,
+              newTransform: {
+                position: new THREE.Vector3(0, 0, 0),
+              },
+              update: function(go, deltaTime) {
+                if(this.hasNewTransform) {
+                  go.transform.position.copy(this.newTransform.position);
+                  go.transform.rotation.copy(this.newTransform.rotation);
+                  go.transform.scale.copy(this.newTransform.scale);
+                  // TODO: make lerp or other predictions
+                  this.hasNewTransform = false;
+                }
+              }
+            };
           };
 
           var updateNetPlayer = function(data) {
@@ -251,8 +275,8 @@ module.exports = {
             var scale = val.transform.scale;
             var rotation = val.transform.rotation;
             var player = _.find(go.children, (c) => c._nameid === "playerNetwork_" + data.key);
-            player.components.NetworkTransform.hasNewTransform = true;
-            player.components.NetworkTransform.newTransform = {
+            player.components.ServerNetworkTransform.hasNewTransform = true;
+            player.components.ServerNetworkTransform.newTransform = {
               position: new THREE.Vector3(position.x, position.y, position.z),
               rotation: new THREE.Euler(rotation.x, rotation.y, rotation.z),
               scale: new THREE.Vector3(scale.x, scale.y, scale.z)

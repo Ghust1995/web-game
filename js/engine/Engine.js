@@ -51,7 +51,7 @@ Engine = {
     }
 
     //Input
-    Input.registerKeys();
+    Input.registerKeys(this.renderer.domElement);
   },
 
   // Works as the main loop
