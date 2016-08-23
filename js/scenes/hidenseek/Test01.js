@@ -109,21 +109,21 @@ module.exports = {
           }),
         },
       },
-      Body: {
-        components: {
-          Mesh: new MeshComponent({
-              type: THREE.SphereGeometry,
-              params: [20, 32, 32]
-            },
-            {
-              type: THREE.MeshPhongMaterial,
-              params: {
-                color: Math.random() * 0xFFFFFF
-              }
-            }
-          ),
-        },
-      },
+      // Body: {
+      //   components: {
+      //     Mesh: new MeshComponent({
+      //         type: THREE.SphereGeometry,
+      //         params: [20, 32, 32]
+      //       },
+      //       {
+      //         type: THREE.MeshPhongMaterial,
+      //         params: {
+      //           color: Math.random() * 0xFFFFFF
+      //         }
+      //       }
+      //     ),
+      //   },
+      // },
       Head: {
         transform: {
           position: new THREE.Vector3(0, 30, 0),
@@ -148,18 +148,25 @@ module.exports = {
         components: {
           Crosshair: {
             raycaster: new THREE.Raycaster(),
-            goToTest: null,
+            // Add a better (possibly readonly reference to the scene)
+            scene: null,
             init: function(go) {
-              this.goToTest = go.parent.parent;
+              this.scene = go.parent.parent;
             },
             update: function (go, deltaTime) {
               this.raycaster.setFromCamera( new THREE.Vector2(Input.Mouse.position.x, Input.Mouse.position.y), go.components.Camera.ref );
-              var intersects = this.raycaster.intersectObjects( this.goToTest.children, true );
+              var objsToTest = this.scene.getObjectByName("NetworkPlayers");
+              var intersects = this.raycaster.intersectObjects( objsToTest.children, true );
               if(intersects.length > 0){
-                // The mesh will always be a children of a game object
-                var hitScanned = this.goToTest.getObjectById(intersects[0].object.id).parent;
-                if(_.hasIn(hitScanned.components.Hitscan, 'onHitScan')) {
-                  hitScanned.components.Hitscan.onHitScan(hitScanned);
+                //
+                var hitObjects = _.map(intersects, (i) => objsToTest.getObjectById(i.object.id));
+                var firstHit = _.find(
+                  hitObjects,
+                  (h) => h.layer === "Default");
+                if(firstHit){
+                  if(_.hasIn(firstHit, 'onHitScan')){
+                    firstHit.onHitScan();
+                  }
                 }
               }
             }
@@ -232,6 +239,7 @@ module.exports = {
           var getNetPlayer = function(data) {
             var val = data.val();
             var pos = val.transform.position;
+            // TODO: Refactor both Hitscan and ServerNetworkTransform
             // TODO: Add more support for "prefabs" and extending them ()
             var BaseGameObject = new GameObject(
                 "playerNetwork_" + data.key,
@@ -280,9 +288,11 @@ module.exports = {
                     isHit: false,
                     wasHit: false,
                     onHitScan: function(go) {
+                      console.log(go);
                       if ( !this.isHit && !this.wasHit ){
                 			  this.context.clearRect(0,0,640,480);
-                				var message = go._nameid;
+                        // TODO: Make this show name set in browser
+                				var message = go.name;
                 				var metrics = this.context.measureText(message);
                 				var width = metrics.width;
                 				this.context.fillStyle = "rgba(0,0,0,0.95)"; // black border
@@ -320,7 +330,7 @@ module.exports = {
             var position = val.transform.position;
             var scale = val.transform.scale;
             var rotation = val.transform.rotation;
-            var player = _.find(go.children, (c) => c._nameid === "playerNetwork_" + data.key);
+            var player = _.find(go.children, (c) => c.name === "playerNetwork_" + data.key);
             player.components.ServerNetworkTransform.hasNewTransform = true;
             player.components.ServerNetworkTransform.newTransform = {
               position: new THREE.Vector3(position.x, position.y, position.z),

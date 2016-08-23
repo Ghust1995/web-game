@@ -3,7 +3,7 @@ const THREE = require('three');
 
 function GameObject(name, transform, components, parent) {
   THREE.Object3D.call(this);
-  this._nameid = name;
+  this.name = name;
   parent.add(this);
 
   //If transform is not defined, set to default transform
@@ -26,7 +26,7 @@ GameObject.prototype = Object.create(THREE.Object3D.prototype, {
     writable: true,
     configurable: true
   },
-  _nameid: {
+  name: {
     value: _.uniqueId("gameObject_"),
     writable: true,
     configurable: true
