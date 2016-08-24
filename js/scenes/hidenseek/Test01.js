@@ -145,6 +145,11 @@ module.exports = {
         },
       },
       Camera: {
+        transform: {
+          position: new THREE.Vector3(0, 50, 300),
+          rotation: new THREE.Euler(0, 0, 0),
+          scale: new THREE.Vector3(1, 1, 1)
+        },
         components: {
           Crosshair: {
             raycaster: new THREE.Raycaster(),
@@ -183,8 +188,6 @@ module.exports = {
               };
               var ASPECT = 4/3;
               var camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-              camera.position.set(0, 100, 300);
-              camera.lookAt(new THREE.Vector3(0, 0, 0));
               Engine.mainCamera = camera;
               this.ref = camera;
               go.add(camera);
@@ -238,16 +241,14 @@ module.exports = {
         init: function(go) {
           var getNetPlayer = function(data) {
             var val = data.val();
-            var pos = val.transform.position;
+            var position = val.transform.position;
+            var scale = val.transform.scale;
+            var rotation = val.transform.rotation;
             // TODO: Refactor both Hitscan and ServerNetworkTransform
             // TODO: Add more support for "prefabs" and extending them ()
             var BaseGameObject = new GameObject(
                 "playerNetwork_" + data.key,
-                {
-                  position: new THREE.Vector3(pos.x, pos.y, pos.z),
-                  rotation: new THREE.Euler(0, 0, 0),
-                  scale: new THREE.Vector3(1, 1, 1)
-                }, {
+                null, {
                   Mesh: new MeshComponent({
                       type: THREE.SphereGeometry,
                       params: [20, 32, 32]
@@ -308,21 +309,29 @@ module.exports = {
                   }
                 }, go);
 
-            BaseGameObject.components.ServerNetworkTransform = {
-              hasNewTransform: false,
-              newTransform: {
-                position: new THREE.Vector3(0, 0, 0),
-              },
-              update: function(go, deltaTime) {
-                if(this.hasNewTransform) {
-                  go.transform.position.copy(this.newTransform.position);
-                  go.transform.rotation.copy(this.newTransform.rotation);
-                  go.transform.scale.copy(this.newTransform.scale);
-                  // TODO: make lerp or other predictions
-                  this.hasNewTransform = false;
+            BaseGameObject.AddComponents({ServerNetworkTransform: {
+                hasNewTransform: false,
+                newTransform: {
+                  position: new THREE.Vector3(0, 0, 0),
+                  rotation: new THREE.Euler(0, 0, 0),
+                  scale: new THREE.Vector3(1, 1, 1)
+                },
+                init: function(go) {
+                  go.transform.position = new THREE.Vector3(position.x, position.y, position.z);
+                  go.transform.rotation = new THREE.Euler(rotation.x, rotation.y, rotation.z);
+                  go.transform.scale = new THREE.Vector3(scale.x, scale.y, scale.z);
+                },
+                update: function(go, deltaTime) {
+                  if(this.hasNewTransform) {
+                    go.transform.position.copy(this.newTransform.position);
+                    go.transform.rotation.copy(this.newTransform.rotation);
+                    go.transform.scale.copy(this.newTransform.scale);
+                    // TODO: make lerp or other predictions
+                    this.hasNewTransform = false;
+                  }
                 }
               }
-            };
+            });
           };
 
           var updateNetPlayer = function(data) {

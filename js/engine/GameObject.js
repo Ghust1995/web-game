@@ -9,11 +9,17 @@ function GameObject(name, transform, components, parent) {
   //If transform is not defined, set to default transform
   if(!_.isUndefined(transform) && !_.isNull(transform)){
     this.transform = transform;
-    setObject3dTransform(this, transform);
   }
-
+  else {
+    this.transform = {
+      position: new THREE.Vector3(0, 0, 0),
+      rotation: new THREE.Euler(0, 0, 0),
+      scale: new THREE.Vector3(1, 1, 1)
+    }
+  }
   this.components = components;
   CallAllComponentsWithFunction(this.components, "init", this);
+  setObject3dTransform(this, this.transform);
 }
 
 GameObject.prototype = Object.create(THREE.Object3D.prototype, {
@@ -41,6 +47,15 @@ setObject3dTransform = function (o3dTo, tFrom) {
   o3dTo.position.copy(tFrom.position);
   o3dTo.rotation.copy(tFrom.rotation);
   o3dTo.scale.copy(tFrom.scale);
+};
+
+GameObject.prototype.AddComponents = function(newComponents) {
+  // Calls all init from new components
+  CallAllComponentsWithFunction(newComponents, "init", this);
+  setObject3dTransform(this, this.transform);
+
+  //  Extend components
+  _.extend(this.components, newComponents);
 };
 
 GameObject.prototype.baseUpdate = function(deltaTime) {
