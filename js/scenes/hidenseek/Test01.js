@@ -244,10 +244,11 @@ module.exports = {
             var position = val.transform.position;
             var scale = val.transform.scale;
             var rotation = val.transform.rotation;
+            var name = val.name;
             // TODO: Refactor both Hitscan and ServerNetworkTransform
             // TODO: Add more support for "prefabs" and extending them ()
             var BaseGameObject = new GameObject(
-                "playerNetwork_" + data.key,
+                name,
                 null, {
                   Mesh: new MeshComponent({
                       type: THREE.SphereGeometry,
@@ -289,7 +290,6 @@ module.exports = {
                     isHit: false,
                     wasHit: false,
                     onHitScan: function(go) {
-                      console.log(go);
                       if ( !this.isHit && !this.wasHit ){
                 			  this.context.clearRect(0,0,640,480);
                         // TODO: Make this show name set in browser
@@ -310,6 +310,7 @@ module.exports = {
                 }, go);
 
             BaseGameObject.AddComponents({ServerNetworkTransform: {
+                key: data.key,
                 hasNewTransform: false,
                 newTransform: {
                   position: new THREE.Vector3(0, 0, 0),
@@ -339,7 +340,8 @@ module.exports = {
             var position = val.transform.position;
             var scale = val.transform.scale;
             var rotation = val.transform.rotation;
-            var player = _.find(go.children, (c) => c.name === "playerNetwork_" + data.key);
+            var player = _.find(go.children, (c) => c.components.ServerNetworkTransform &&
+                                                    c.components.ServerNetworkTransform.key === data.key);
             player.components.ServerNetworkTransform.hasNewTransform = true;
             player.components.ServerNetworkTransform.newTransform = {
               position: new THREE.Vector3(position.x, position.y, position.z),

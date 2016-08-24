@@ -31,6 +31,10 @@ const THINGS_TO_LOAD = [
     loader: THREE.TextureLoader,
     name: "floorTexture",
     path: "/textures/checkerboard.jpg"
+  },
+  {
+    name: "randomNames",
+    path: "/misc/randomnames.json"
   }
 ];
 
