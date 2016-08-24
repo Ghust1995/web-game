@@ -10,7 +10,6 @@ const Input = require('./Input');
 const GameObject = require('./GameObject');
 const AssetLoader = require('./AssetLoader');
 const FirebaseManager = require('./FirebaseManager');
-const RandomNameGenerator = require("../misc/RandomNames");
 
 Engine = {
   // TODO? Generate things to load from hierarchy
@@ -18,7 +17,6 @@ Engine = {
   run: function(rawHierarchy, thingsToLoad, initSpecs) {
     // Waits for stuff to be loaded
     AssetLoader.load(thingsToLoad, function() {
-      RandomNameGenerator.init();
       this.init(rawHierarchy, initSpecs);
       this.animate();
     }.bind(this));
