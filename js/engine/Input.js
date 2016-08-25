@@ -49,26 +49,23 @@ Input = {
   },
 
   register: function(domElement) {
+    // Initialize keybits
+    this.keyBits = (_.reduce(this.Keys, function(result, val, key) {
+      result.bits[val] = result.acc;
+      result.acc *= 2;
+      return result;
+    }, {acc: 1, bits: {}})).bits;
+
     window.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
     window.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
     window.addEventListener( 'mousemove', e => this.onMouseMove(e.clientX, e.clientY, domElement), false );
   },
-  // TODO: Add more possible keys here (figure keycodes)
+  // NOTE: Add more possible keys here (figure keycodes)
   Keys: {
-    UP: 38,
-    DOWN: 40,
-    LEFT: 37,
-    RIGHT: 39,
-    SPACE: 32
-  },
-
-  // TODO: Can be generated in "Compile Time"
-  keyBits: {
-    38: 0x1,
-    40: 0x2,
-    37: 0x4,
-    39: 0x8,
-    32: 0x10
+    UP: 38, DOWN: 40, LEFT: 37,  RIGHT: 39,
+    SPACE: 32,
+    W: 87, A: 65, S: 83, D: 68, Q: 81, E: 69,
+    SHIFT: 16, ALT: 18, ENTER: 13, ESC: 27,
   },
 };
 
