@@ -5,7 +5,6 @@ const Assets = require('../engine/AssetLoader').Assets;
 
 
 Generator = {
-  initialized: false,
   adjectives: [
   	"like",  	   "calm",  	  "adamant",  	  "crabby",  	     "free",  	  "picayune",  	"furry",
   	"venomous",  "exciting",  "merciful",  	  "bloody",  	     "homeless",  "lacking",  	"descriptive",

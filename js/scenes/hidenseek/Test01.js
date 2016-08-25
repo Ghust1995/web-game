@@ -318,9 +318,9 @@ module.exports = {
                   scale: new THREE.Vector3(1, 1, 1)
                 },
                 init: function(go) {
-                  go.transform.position = new THREE.Vector3(position.x, position.y, position.z);
-                  go.transform.rotation = new THREE.Euler(rotation.x, rotation.y, rotation.z);
-                  go.transform.scale = new THREE.Vector3(scale.x, scale.y, scale.z);
+                  go.transform.position.copy(new THREE.Vector3(position.x, position.y, position.z));
+                  go.transform.rotation.copy(new THREE.Euler(rotation.x, rotation.y, rotation.z));
+                  go.transform.scale.copy(new THREE.Vector3(scale.x, scale.y, scale.z));
                 },
                 update: function(go, deltaTime) {
                   if(this.hasNewTransform) {
@@ -349,7 +349,7 @@ module.exports = {
               scale: new THREE.Vector3(scale.x, scale.y, scale.z)
             };
           };
-
+          // TODO: Make object be removed on delete
           FirebaseManager.database.ref("players").limitToLast(10).on('child_added', getNetPlayer);
           FirebaseManager.database.ref("players").limitToLast(10).on('child_changed', updateNetPlayer);
         }

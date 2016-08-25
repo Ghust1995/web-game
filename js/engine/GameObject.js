@@ -3,35 +3,33 @@ const THREE = require('three');
 
 function GameObject(name, transform, components, parent) {
   THREE.Object3D.call(this);
+  // Alias transform to Object3D properties
+  // NOTE: Make sure this and properties are never set
+  this.transform = {
+    position: this.position,
+    rotation: this.rotation,
+    scale: this.scale
+  };
+
   this.name = name;
   parent.add(this);
 
   //If transform is not defined, set to default transform
   if(!_.isUndefined(transform) && !_.isNull(transform)){
-    this.transform = transform;
+    this.position.copy(transform.position);
+    this.rotation.copy(transform.rotation);
+    this.scale.copy(transform.scale);
   }
   else {
-    this.transform = {
-      position: new THREE.Vector3(0, 0, 0),
-      rotation: new THREE.Euler(0, 0, 0),
-      scale: new THREE.Vector3(1, 1, 1)
-    };
+    this.position.copy(new THREE.Vector3(0, 0, 0));
+    this.rotation.copy(new THREE.Euler(0, 0, 0));
+    this.scale.copy(new THREE.Vector3(1, 1, 1));
   }
   this.components = components;
   CallAllComponentsWithFunction(this.components, "init", this);
-  setObject3dTransform(this, this.transform);
 }
 
 GameObject.prototype = Object.create(THREE.Object3D.prototype, {
-  transform: {
-    value: {
-      position: new THREE.Vector3(0, 0, 0),
-      rotation: new THREE.Euler(0, 0, 0),
-      scale: new THREE.Vector3(1, 1, 1)
-    },
-    writable: true,
-    configurable: true
-  },
   name: {
     value: _.uniqueId("gameObject_"),
     writable: true,
@@ -41,18 +39,9 @@ GameObject.prototype = Object.create(THREE.Object3D.prototype, {
 
 GameObject.prototype.constructor = GameObject;
 
-// Weird workaround to put stuff inside transform
-// TODO: Make this in a better way or ignore
-setObject3dTransform = function (o3dTo, tFrom) {
-  o3dTo.position.copy(tFrom.position);
-  o3dTo.rotation.copy(tFrom.rotation);
-  o3dTo.scale.copy(tFrom.scale);
-};
-
 GameObject.prototype.AddComponents = function(newComponents) {
   // Calls all init from new components
   CallAllComponentsWithFunction(newComponents, "init", this);
-  setObject3dTransform(this, this.transform);
 
   //  Extend components
   _.extend(this.components, newComponents);
@@ -67,7 +56,6 @@ GameObject.prototype.baseUpdate = function(deltaTime) {
 
   // Calls all update from components
   CallAllComponentsWithFunction(this.components, "update", this, deltaTime);
-  setObject3dTransform(this, this.transform);
 };
 
 // Helper
