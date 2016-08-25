@@ -15,6 +15,10 @@ const GameObject = require('../../engine/GameObject');
 const MeshComponent = require('../../components/Mesh');
 const NetworkTransformComponent = require('../../components/NetworkTransform');
 
+// Custom Modules
+//const CustomComponents = require('./CustomComponents');
+const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
+
 module.exports = {
   Floor: {
     transform: {
@@ -238,6 +242,7 @@ module.exports = {
     components: {
       NetworkPlayers: {
         PLAYER_LIMIT: 10,
+        BaseGameObject: ServerPlayerView,
         init: function(go) {
           var getNetPlayer = function(data) {
             var val = data.val();
@@ -246,70 +251,9 @@ module.exports = {
             var rotation = val.transform.rotation;
             var name = val.name;
             // TODO: Refactor both Hitscan and ServerNetworkTransform
-            // TODO: Add more support for "prefabs" and extending them ()
-            var BaseGameObject = new GameObject(
-                name,
-                null, {
-                  Mesh: new MeshComponent({
-                      type: THREE.SphereGeometry,
-                      params: [20, 32, 32]
-                    },
-                    {
-                      type: THREE.MeshPhongMaterial,
-                      params: {
-                        color: Math.random() * 0xFFFFFF
-                      }
-                    }
-                  ),
-                  Hitscan: {
-                    init: function (go) {
-                      this.canvas = document.createElement('canvas');
-                    	this.context = this.canvas.getContext('2d');
-                    	this.context.font = "Bold 20px Arial";
-                    	this.context.fillStyle = "rgba(0,0,0,0.95)";
+            var baseGameObject = new this.BaseGameObject(name, null, go);
 
-                    	this.texture = new THREE.Texture(this.canvas);
-                    	this.texture.needsUpdate = true;
-
-                    	var spriteMaterial = new THREE.SpriteMaterial( { map: this.texture } );
-
-                    	this.sprite = new THREE.Sprite( spriteMaterial );
-                    	this.sprite.scale.set(200,100,1.0);
-                    	this.sprite.position.set( 0, 0, 0 );
-                    	go.add( this.sprite );
-
-                    },
-                    update: function(go, deltaTime) {
-                      if(!this.isHit && this.wasHit) {
-                				this.context.clearRect(0,0,300,300);
-                				this.texture.needsUpdate = true;
-                			}
-                      this.wasHit = this.isHit;
-                      this.isHit = false;
-                    },
-                    isHit: false,
-                    wasHit: false,
-                    onHitScan: function(go) {
-                      if ( !this.isHit && !this.wasHit ){
-                			  this.context.clearRect(0,0,640,480);
-                        // TODO: Make this show name set in browser
-                				var message = go.name;
-                				var metrics = this.context.measureText(message);
-                				var width = metrics.width;
-                				this.context.fillStyle = "rgba(0,0,0,0.95)"; // black border
-                				this.context.fillRect( 0,0, width+8,20+8);
-                				this.context.fillStyle = "rgba(255,255,255,0.95)"; // white filler
-                				this.context.fillRect( 2,2, width+4,20+4 );
-                				this.context.fillStyle = "rgba(0,0,0,1)"; // text color
-                				this.context.fillText( message, 4,20 );
-                				this.texture.needsUpdate = true;
-                			}
-                      this.isHit = true;
-                    }
-                  }
-                }, go);
-
-            BaseGameObject.AddComponents({ServerNetworkTransform: {
+            baseGameObject.AddComponents({ServerNetworkTransform: {
                 key: data.key,
                 hasNewTransform: false,
                 newTransform: {
@@ -333,7 +277,7 @@ module.exports = {
                 }
               }
             });
-          };
+          }.bind(this);
 
           var updateNetPlayer = function(data) {
             var val = data.val();

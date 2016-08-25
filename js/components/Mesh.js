@@ -19,7 +19,7 @@ Mesh.prototype.init = function (go) {
   mesh.onHitScan = function() {
     _.forIn(_.pickBy(
                 this.parent.components,
-                (c)  => _.has(c, 'onHitScan') && c !== this),
+                (c)  => _.hasIn(c, 'onHitScan') && c !== this),
             hs => {hs.onHitScan(this.parent);});
   };
   mesh.layer = this.layer;
