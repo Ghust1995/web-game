@@ -48,8 +48,7 @@ Input = {
     this._lastState = this._currentState;
   },
 
-  // TODO: give better name (init?) & better way to pass domELement
-  registerKeys: function(domElement) {
+  register: function(domElement) {
     window.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
     window.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
     window.addEventListener( 'mousemove', e => this.onMouseMove(e.clientX, e.clientY, domElement), false );
