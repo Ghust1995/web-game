@@ -6,7 +6,7 @@ const _ = require('lodash');
 const GameObject = require('../../../engine/GameObject');
 
 // Core Components
-const MeshComponent = require('../../../components/Mesh');
+const MeshComponent = require('../../../coreComponents/Mesh');
 
 // Custom Components
 const NameOnHitScanComponent = require('../customComponents/NameOnHitScan');

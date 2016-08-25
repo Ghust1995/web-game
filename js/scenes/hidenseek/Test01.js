@@ -12,8 +12,8 @@ const Assets = require('../../engine/AssetLoader').Assets;
 const GameObject = require('../../engine/GameObject');
 
 // Components
-const MeshComponent = require('../../components/Mesh');
-const NetworkTransformComponent = require('../../components/NetworkTransform');
+const MeshComponent = require('../../coreComponents/Mesh');
+const NetworkTransformComponent = require('../../coreComponents/NetworkTransform');
 
 // Custom Modules
 //const CustomComponents = require('./CustomComponents');
