@@ -1,11 +1,12 @@
 // NetworkTransform Components
 // This component ensures that the transform of this object is stored in the Firebase DB on the given base ref
 
-const FirebaseManager = require('../engine/FirebaseManager');
-const RandomNameGenerator = require('../misc/RandomNames');
-
+// Node Modules
 const _ = require('lodash');
 
+// Engine modules
+const FirebaseManager = require('../engine/FirebaseManager');
+const RandomNameGenerator = require('../misc/RandomNames');
 
 function NetworkTransform(baseRef) {
   this.baseRef = baseRef;

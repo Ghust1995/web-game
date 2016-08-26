@@ -13,13 +13,51 @@ const GameObject = require('../../engine/GameObject');
 
 // Components
 const MeshComponent = require('../../coreComponents/Mesh');
+const CameraComponent = require('../../coreComponents/Camera');
 const NetworkTransformComponent = require('../../coreComponents/NetworkTransform');
 
 // Custom Modules
 //const CustomComponents = require('./CustomComponents');
 const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
 
+var globalCamera = null;
+
 module.exports = {
+  TheWall : {
+    transform: {
+      position: new THREE.Vector3(0, 375, 500),
+      rotation: new THREE.Euler(0, Math.PI, 0),
+      scale: new THREE.Vector3(1, 1, 1)
+    },
+    components: {
+      PlaneMesh: {
+        init: function(go) {
+          this.renderTarget = new THREE.WebGLRenderTarget(512, 512, { format: THREE.RGBFormat } );
+          var TVMaterial = new THREE.MeshBasicMaterial({map: this.renderTarget.texture});
+          var TVGeometry = new THREE.PlaneGeometry(1000, 750, 1, 1);
+          var TVMesh = new THREE.Mesh(TVGeometry, TVMaterial);
+          go.add(TVMesh);
+        },
+        update: function(go, deltaTime) {
+          var camChild = go.getObjectByName("Camera");
+          Engine.renderer.render(Engine.hierarchy, camChild.components.Camera.ref, this.renderTarget);
+        },
+      },
+    },
+    children: {
+      Camera: {
+        transform: {
+          position: new THREE.Vector3(0, 375, 0),
+          rotation: new THREE.Euler(Math.PI/4, Math.PI, 0),
+          scale: new THREE.Vector3(1, 1, 1)
+        },
+        components: {
+          Camera: new CameraComponent(false),
+        }
+      }
+    }
+  },
+
   Floor: {
     transform: {
       position: new THREE.Vector3(0, 0, 0),
@@ -113,21 +151,6 @@ module.exports = {
           }),
         },
       },
-      // Body: {
-      //   components: {
-      //     Mesh: new MeshComponent({
-      //         type: THREE.SphereGeometry,
-      //         params: [20, 32, 32]
-      //       },
-      //       {
-      //         type: THREE.MeshPhongMaterial,
-      //         params: {
-      //           color: Math.random() * 0xFFFFFF
-      //         }
-      //       }
-      //     ),
-      //   },
-      // },
       Head: {
         transform: {
           position: new THREE.Vector3(0, 30, 0),
@@ -148,18 +171,20 @@ module.exports = {
           ),
         },
       },
-      Camera: {
+      ThirdPersonCamera: {
         transform: {
           position: new THREE.Vector3(0, 50, 300),
           rotation: new THREE.Euler(0, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
         },
         components: {
+          Camera: new CameraComponent(true),
           Crosshair: {
             raycaster: new THREE.Raycaster(),
             // Add a better (possibly readonly reference to the scene)
             scene: null,
             init: function(go) {
+              globalCamera = go.components.Camera.ref;
               this.scene = go.parent.parent;
             },
             update: function (go, deltaTime) {
@@ -181,22 +206,7 @@ module.exports = {
             }
           },
 
-          // TODO: Create camera component
-          Camera: {
-            ref: null,
-            init: function(go) {
-              var specs = {
-                VIEW_ANGLE: 45,
-                NEAR: 0.1,
-                FAR: 20000
-              };
-              var ASPECT = 4/3;
-              var camera = new THREE.PerspectiveCamera( specs.VIEW_ANGLE, ASPECT, specs.NEAR, specs.FAR );
-              Engine.mainCamera = camera;
-              this.ref = camera;
-              go.add(camera);
-            }
-          }
+
         },
       },
     }

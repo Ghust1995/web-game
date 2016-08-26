@@ -2,6 +2,7 @@
 // This component is a Mesh + Material
 // It will be put in the same transform as the game object containing it
 
+// Node Modules
 const THREE = require('three');
 const _ = require('lodash');
 
