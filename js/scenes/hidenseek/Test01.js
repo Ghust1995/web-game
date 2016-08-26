@@ -14,6 +14,7 @@ const GameObject = require('../../engine/GameObject');
 // Components
 const MeshComponent = require('../../coreComponents/Mesh');
 const CameraComponent = require('../../coreComponents/Camera');
+const LightComponent = require('../../coreComponents/Light');
 const NetworkTransformComponent = require('../../coreComponents/NetworkTransform');
 
 // Custom Modules
@@ -230,21 +231,8 @@ module.exports = {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      // TODO: Create light components
-      SpotLight: {
-        light: null,
-        init: function(go) {
-          this.light = new THREE.SpotLight(0xffffff, 5.0, 1000, Math.PI/4, 0.5, 2);
-          go.add(this.light);
-        }
-      },
-      AmbientLight: {
-        light: null,
-        init: function(go) {
-          this.light = new THREE.AmbientLight(0xFF00FF, 0.25);
-          go.add(this.light);
-        }
-      },
+      SpotLight: new LightComponent("spot", 0xffffff, 5.0, 1000, Math.PI/4, 0.5, 2),
+      AmbientLight: new LightComponent("ambient", 0xFF00FF, 0.25),
     }
   },
   NetworkPlayers: {
@@ -309,7 +297,7 @@ module.exports = {
             console.log("DESTROYED SOMEONE");
             go.remove(player);
           };
-          // TODO: Make object be removed on delete
+
           FirebaseManager.database.ref("players").limitToLast(10).on('child_added', getNetPlayer);
           FirebaseManager.database.ref("players").limitToLast(10).on('child_changed', updateNetPlayer);
           FirebaseManager.database.ref("players").on('child_removed', removeNetPlayer);
