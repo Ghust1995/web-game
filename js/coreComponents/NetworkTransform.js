@@ -13,6 +13,7 @@ function NetworkTransform(baseRef) {
 }
 
 NetworkTransform.prototype.init = function(go) {
+  RandomNameGenerator.init();
   this.key = FirebaseManager.database.ref(this.baseRef).push({
     name: RandomNameGenerator.getUnique(),
     transform: {

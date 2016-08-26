@@ -57,7 +57,6 @@ module.exports = {
       }
     }
   },
-
   Floor: {
     transform: {
       position: new THREE.Vector3(0, 0, 0),
@@ -303,9 +302,17 @@ module.exports = {
               scale: new THREE.Vector3(scale.x, scale.y, scale.z)
             };
           };
+
+          var removeNetPlayer = function(data) {
+            var player = _.find(go.children, (c) => c.components.ServerNetworkTransform &&
+                                                    c.components.ServerNetworkTransform.key === data.key);
+            console.log("DESTROYED SOMEONE");
+            go.remove(player);
+          };
           // TODO: Make object be removed on delete
           FirebaseManager.database.ref("players").limitToLast(10).on('child_added', getNetPlayer);
           FirebaseManager.database.ref("players").limitToLast(10).on('child_changed', updateNetPlayer);
+          FirebaseManager.database.ref("players").on('child_removed', removeNetPlayer);
         }
       }
     }
