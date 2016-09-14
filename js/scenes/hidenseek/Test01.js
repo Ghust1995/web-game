@@ -24,7 +24,7 @@ const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
 var globalCamera = null;
 
 module.exports = {
-  TheWall : {
+  TheMirror : {
     transform: {
       position: new THREE.Vector3(0, 375, 500),
       rotation: new THREE.Euler(0, Math.PI, 0),
@@ -247,7 +247,7 @@ module.exports = {
             var scale = val.transform.scale;
             var rotation = val.transform.rotation;
             var name = val.name;
-            // TODO: Refactor both Hitscan and ServerNetworkTransform
+            // TODO: ServerNetworkTransform
             var baseGameObject = new this.BaseGameObject(name, null, go);
 
             baseGameObject.AddComponents({ServerNetworkTransform: {

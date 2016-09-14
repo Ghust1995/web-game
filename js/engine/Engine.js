@@ -32,14 +32,14 @@ Engine = {
     // Initialize clock
     this.clock = new THREE.Clock();
 
-    // Creates the hierarchy
-    this.hierarchy = createHierarchy(rawHierarchy);
-
     //We create the WebGL renderer and add it to the document
     this.renderer = new THREE.WebGLRenderer( { antialias:true });
     this.renderer.setSize( initSpecs.SCREEN_WIDTH, initSpecs.SCREEN_HEIGHT );
     var container = document.getElementById(this.specs.CONTAINER_NAME);
     container.appendChild( this.renderer.domElement );
+
+    // Creates the hierarchy
+    this.hierarchy = createHierarchy(rawHierarchy);
 
     // Stats display
     if(this.specs.SHOW_STATS) {
