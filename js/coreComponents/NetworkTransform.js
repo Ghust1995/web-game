@@ -5,16 +5,16 @@
 const _ = require('lodash');
 
 // Engine modules
-const FirebaseManager = require('../engine/FirebaseManager');
 const RandomNameGenerator = require('../misc/RandomNames');
 
-function NetworkTransform(baseRef) {
+function NetworkTransform(baseRef, firebase) {
   this.baseRef = baseRef;
+  this.firebase = firebase;
 }
 
 NetworkTransform.prototype.init = function(go) {
   RandomNameGenerator.init();
-  this.key = FirebaseManager.database.ref(this.baseRef).push({
+  this.key = this.firebase.database.ref(this.baseRef).push({
     name: RandomNameGenerator.getUnique(),
     transform: {
       position: {
@@ -34,11 +34,11 @@ NetworkTransform.prototype.init = function(go) {
       }
     }
   }).key;
-  FirebaseManager.database.ref(this.baseRef + '/' + this.key).onDisconnect().remove();
+  this.firebase.database.ref(this.baseRef + '/' + this.key).onDisconnect().remove();
 };
 
 NetworkTransform.prototype.updateDB = function (go) {
-  FirebaseManager.database.ref(this.baseRef + '/' + this.key).update({transform: {
+  this.firebase.database.ref(this.baseRef + '/' + this.key).update({transform: {
       position: {
         x: go.transform.position.x,
         y: go.transform.position.y,

@@ -1,13 +1,11 @@
 // Node modules
 const _ = require('lodash');
 const THREE = require('three');
-const firebase = require('firebase');
 const $ = require('jquery');
 
 // Engine modules
 const Input = require('../../engine/Input');
 const Engine = require('../../engine/Engine');
-const FirebaseManager = require('../../engine/FirebaseManager');
 const GameObject = require('../../engine/GameObject');
 
 // Components
@@ -22,7 +20,7 @@ const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
 
 var globalCamera = null;
 
-module.exports = function(Assets) {
+module.exports = function(Assets, Firebase) {
 return {
   TheMirror: {
     transform: {
@@ -83,7 +81,7 @@ return {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      NetworkTransform: new NetworkTransformComponent("players"),
+      NetworkTransform: new NetworkTransformComponent("players", Firebase),
       PlayerController: {
         linSpeed: 80,
         angSpeed: 4,
@@ -296,9 +294,9 @@ return {
             go.remove(player);
           };
 
-          FirebaseManager.database.ref("players").limitToLast(10).on('child_added', getNetPlayer);
-          FirebaseManager.database.ref("players").limitToLast(10).on('child_changed', updateNetPlayer);
-          FirebaseManager.database.ref("players").on('child_removed', removeNetPlayer);
+          Firebase.database.ref("players").limitToLast(10).on('child_added', getNetPlayer);
+          Firebase.database.ref("players").limitToLast(10).on('child_changed', updateNetPlayer);
+          Firebase.database.ref("players").on('child_removed', removeNetPlayer);
         }
       }
     }

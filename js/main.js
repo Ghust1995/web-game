@@ -10,11 +10,20 @@ const Detector = require('../libraries/Detector');
 const Engine = require('./engine/Engine');
 
 // Put global initial specifications here
-const INIT_SPECS = {
-  SCREEN_WIDTH: 800,
-  SCREEN_HEIGHT: 600,
-  SHOW_STATS: true,
-  CONTAINER_NAME: "WebGLContainer"
+
+const CONFIGURATION = {
+  INIT_SPECS: {
+    SCREEN_WIDTH: 800,
+    SCREEN_HEIGHT: 600,
+    SHOW_STATS: true,
+    CONTAINER_NAME: "WebGLContainer"
+  },
+  FIREBASE: {
+    apiKey: "AIzaSyAqHGwQN2J5BHniiZG0RtrFMHmQRDAKWCQ",
+    authDomain: "multiplayer-2108d.firebaseapp.com",
+    databaseURL: "https://multiplayer-2108d.firebaseio.com",
+    storageBucket: "multiplayer-2108d.appspot.com",
+  },
 };
 
 // TODO? Populate this at runtime somehow
@@ -38,6 +47,13 @@ const THINGS_TO_LOAD = [
   }
 ];
 
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAqHGwQN2J5BHniiZG0RtrFMHmQRDAKWCQ",
+  authDomain: "multiplayer-2108d.firebaseapp.com",
+  databaseURL: "https://multiplayer-2108d.firebaseio.com",
+  storageBucket: "multiplayer-2108d.appspot.com",
+};
+
 // RAW_HIERARCHY is the initial specification of the scene, this works pretty close to unity
 // Each game object has a transform and components specifications
 // If there is a reusable component, move it to a component module (see meshComponent)
@@ -47,5 +63,5 @@ const RAW_HIERARCHY = require("./scenes/hidenseek/Test01");
 window.onload = function() {
   // Verifies if the browser supports webgl
   if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-  Engine.run(RAW_HIERARCHY, THINGS_TO_LOAD, INIT_SPECS);
+  Engine.run(RAW_HIERARCHY, THINGS_TO_LOAD, CONFIGURATION);
 };
