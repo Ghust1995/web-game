@@ -11,6 +11,10 @@ function GameObject(name, transform, components, parent) {
     scale: this.scale
   };
 
+  this.transform.getForward = function() {
+    return new THREE.Vector3(0, 0, 1).applyMatrix4(this.worldMatrix);
+  };
+
   this.name = name;
   parent.add(this);
 
