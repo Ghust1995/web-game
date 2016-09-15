@@ -8,7 +8,6 @@ const $ = require('jquery');
 const Input = require('../../engine/Input');
 const Engine = require('../../engine/Engine');
 const FirebaseManager = require('../../engine/FirebaseManager');
-const Assets = require('../../engine/AssetLoader').Assets;
 const GameObject = require('../../engine/GameObject');
 
 // Components
@@ -23,8 +22,9 @@ const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
 
 var globalCamera = null;
 
-module.exports = {
-  TheMirror : {
+module.exports = function(Assets) {
+return {
+  TheMirror: {
     transform: {
       position: new THREE.Vector3(0, 375, 500),
       rotation: new THREE.Euler(0, Math.PI, 0),
@@ -65,17 +65,15 @@ module.exports = {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      FloorMesh : {
-        init: function(go) {
-          //TODO: Initial Configuration in loader (see loader todos)
-          Assets.floorTexture.wrapS = Assets.floorTexture.wrapT = THREE.RepeatWrapping;
-        	Assets.floorTexture.repeat.set( 10, 10 );
-        	var floorMaterial = new THREE.MeshPhongMaterial( { map: Assets.floorTexture, side: THREE.DoubleSide } );
-        	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-        	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        	go.add(floor);
+      Mesh: new MeshComponent({
+          type: THREE.PlaneGeometry,
+          params: [1000, 1000, 10, 10]
+        },
+        {
+          type: THREE.MeshPhongMaterial,
+          params: { map: Assets.floorTexture, side: THREE.DoubleSide }
         }
-      }
+      )
     }
   },
   Player: {
@@ -305,4 +303,5 @@ module.exports = {
       }
     }
   }
+};
 };

@@ -1,8 +1,6 @@
 // TODO: Connect this to firebase to guarantee unique names overall;
 const $ = require('jquery');
 const _ = require('lodash');
-const Assets = require('../engine/AssetLoader').Assets;
-
 
 Generator = {
   adjectives: [

@@ -2,3 +2,4 @@ node_modules/
 three.js-master/
 build/
 todo/
+.firebaserc

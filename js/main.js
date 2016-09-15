@@ -30,7 +30,11 @@ const THINGS_TO_LOAD = [
   {
     loader: THREE.TextureLoader,
     name: "floorTexture",
-    path: "/textures/checkerboard.jpg"
+    path: "/textures/checkerboard.jpg",
+    init: function(asset) {
+      asset.wrapS = asset.wrapT = THREE.RepeatWrapping;
+      asset.repeat.set( 10, 10 );
+    }
   }
 ];
 

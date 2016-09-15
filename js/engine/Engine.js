@@ -8,7 +8,7 @@ const Stats = require('../../libraries/Stats');
 // Internal modules
 const Input = require('./Input');
 const GameObject = require('./GameObject');
-const AssetLoader = require('./AssetLoader');
+const LoadAssets = require('./LoadAssets');
 const FirebaseManager = require('./FirebaseManager');
 
 Engine = {
@@ -16,8 +16,8 @@ Engine = {
   // Compile time? or Run Time?
   run: function(rawHierarchy, thingsToLoad, initSpecs) {
     // Waits for stuff to be loaded
-    AssetLoader.load(thingsToLoad, function() {
-      this.init(rawHierarchy, initSpecs);
+    LoadAssets(thingsToLoad).then(function(assets) {
+      this.init(rawHierarchy(assets), initSpecs);
       this.animate();
     }.bind(this));
   },
