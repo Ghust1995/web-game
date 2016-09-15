@@ -39,6 +39,7 @@ GameObject.prototype = Object.create(THREE.Object3D.prototype, {
 
 GameObject.prototype.constructor = GameObject;
 
+// TODO: make custom components
 GameObject.prototype.AddComponents = function(newComponents) {
   // Calls all init from new components
   CallAllComponentsWithFunction(newComponents, "init", this);

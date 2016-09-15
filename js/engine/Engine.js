@@ -51,7 +51,7 @@ Engine = {
     }
 
     //Input
-    Input.register(this.renderer.domElement);
+    Input.init(this.renderer.domElement);
   },
 
   // Works as the main loop
@@ -59,13 +59,11 @@ Engine = {
   // Study better fixed loose time architecture
   animate: function() {
     requestAnimationFrame(this.animate.bind(this));
-    
+
     this.update();
   },
 
   update: function() {
-    Input.update();
-
     var deltaTime = this.clock.getDelta();
     // TODO? Make scene a game object so we only need do call scene.update
     _.forEach(_.filter(this.hierarchy.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
@@ -77,6 +75,8 @@ Engine = {
 
     if(this.specs.SHOW_STATS)
       this.stats.update();
+
+    Input.endUpdate();
 
 
   }
