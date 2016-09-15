@@ -16,6 +16,8 @@ Input = {
             y: 0
         },
     },
+    // TODO: Learn about mouse sensitivity
+    Sensitivity: 0.01,
     _locked: false,
 
     // Checks if key is held
@@ -41,16 +43,18 @@ Input = {
         this._currentState &= ~this.keyBits[key];
     },
 
-    onMouseMove: function(mouseX, mouseY, deltaX, deltaY, event, domElement) {
-        // calculate mouse position in normalized device coordinates
-        // (-1 to +1) for both components
+    onMouseMove: function(mouseX, mouseY, deltaX, deltaY, domElement) {
         var rect = domElement.getBoundingClientRect();
 
-        this.Mouse.delta.x = deltaX / rect.width;
-        this.Mouse.delta.y = deltaY / rect.height;
+        // NOTE: Might make sense to normalize this to -1 ~ +1
+        this.Mouse.delta.x = this._locked ? deltaX * this.Sensitivity : 0;
+        this.Mouse.delta.y = this._locked ? deltaY * this.Sensitivity : 0;
 
-        this.Mouse.position.x = 2 * (_.clamp(mouseX, rect.left, rect.right) - rect.left) / rect.width - 1;
-        this.Mouse.position.y = 1 - 2 * (_.clamp(mouseY, rect.top, rect.bottom) - rect.top) / rect.height;
+
+        this.Mouse.position.x = this._locked ? 0 :
+            2 * (_.clamp(mouseX, rect.left, rect.right) - rect.left) / rect.width - 1;
+        this.Mouse.position.y = this._locked ? 0 :
+            1 - 2 * (_.clamp(mouseY, rect.top, rect.bottom) - rect.top) / rect.height;
     },
 
     // Prepares for next frame
@@ -71,19 +75,29 @@ Input = {
             bits: {}
         })).bits;
 
+        // Create evend handlers
+        var handleLockChange = () => {
+            if (document.pointerLockElement === domElement ||
+                document.mozPointerLockElement === domElement) {
+                this._locked = true;
+            } else {
+                this._locked = false;
+            }
+        };
+        var handleMouseDown = (e) => {
+            domElement.requestPointerLock = domElement.requestPointerLock ||
+                domElement.mozRequestPointerLock;
+            domElement.requestPointerLock();
+        };
+
+
         // Register listeners
-        window.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
-        window.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
-        window.addEventListener('mousemove', e => this.onMouseMove(e.clientX, e.clientY, e.movementX, e.movementY, e, domElement), false);
+        document.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
+        document.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
+        document.addEventListener('mousemove', e => this.onMouseMove(e.mouseX, e.mouseY, e.movementX, e.movementY, domElement), false);
         document.addEventListener('mousedown', handleMouseDown, false);
-
-        function handleMouseDown(e) {
-          domElement.requestPointerLock = domElement.requestPointerLock ||
-              domElement.mozRequestPointerLock;
-
-          domElement.requestPointerLock();
-          this._locked = true;
-        }
+        document.addEventListener('pointerlockchange', handleLockChange, false);
+        document.addEventListener('mozpointerlockchange', handleLockChange, false);
     },
     // NOTE: Add more possible keys here (figure keycodes)
     Keys: {
