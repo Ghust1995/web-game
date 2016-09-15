@@ -14,27 +14,27 @@ const FirebaseManager = require('./FirebaseManager');
 Engine = {
   // TODO? Generate things to load from hierarchy
   // Compile time? or Run Time?
-  run: function(rawHierarchy, thingsToLoad, initSpecs) {
+  run: function(rawHierarchyGenerator, thingsToLoad, config) {
     // Waits for stuff to be loaded
     LoadAssets(thingsToLoad).then(function(assets) {
-      this.init(rawHierarchy(assets), initSpecs);
+      firebase = new FirebaseManager(config.FIREBASE);
+      this.init(rawHierarchyGenerator(assets, firebase), config);
       this.animate();
     }.bind(this));
   },
 
-  init: function(rawHierarchy, initSpecs) {
+  init: function(rawHierarchy, config) {
     // Start connection with Firebase
-    FirebaseManager.init();
 
     // Set specifications
-    this.specs = initSpecs;
+    this.specs = config.INIT_SPECS;
 
     // Initialize clock
     this.clock = new THREE.Clock();
 
     //We create the WebGL renderer and add it to the document
     this.renderer = new THREE.WebGLRenderer( { antialias:true });
-    this.renderer.setSize( initSpecs.SCREEN_WIDTH, initSpecs.SCREEN_HEIGHT );
+    this.renderer.setSize( this.specs.SCREEN_WIDTH, this.specs.SCREEN_HEIGHT );
     var container = document.getElementById(this.specs.CONTAINER_NAME);
     container.appendChild( this.renderer.domElement );
 
