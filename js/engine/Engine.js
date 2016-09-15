@@ -59,21 +59,26 @@ Engine = {
   // Study better fixed loose time architecture
   animate: function() {
     requestAnimationFrame(this.animate.bind(this));
-    // Renders the scene (hierarchy), viewed by the main camera
-    if(_.isUndefined(this.mainCamera))
-      console.error("Main Camera not set.");
-    this.renderer.render(this.hierarchy, this.mainCamera);
+    
     this.update();
   },
 
   update: function() {
+    Input.update();
+
     var deltaTime = this.clock.getDelta();
     // TODO? Make scene a game object so we only need do call scene.update
     _.forEach(_.filter(this.hierarchy.children, (c) => c instanceof GameObject), go => go.baseUpdate(deltaTime));
 
-    Input.update();
+    // Renders the scene (hierarchy), viewed by the main camera
+    if(_.isUndefined(this.mainCamera))
+      console.error("Main Camera not set.");
+    this.renderer.render(this.hierarchy, this.mainCamera);
+
     if(this.specs.SHOW_STATS)
       this.stats.update();
+
+
   }
 };
 

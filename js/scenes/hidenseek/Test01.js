@@ -24,7 +24,7 @@ var globalCamera = null;
 
 module.exports = function(Assets) {
 return {
-  TheMirror: {
+  Mirror: {
     transform: {
       position: new THREE.Vector3(0, 375, 500),
       rotation: new THREE.Euler(0, Math.PI, 0),
@@ -84,12 +84,19 @@ return {
     },
     components: {
       NetworkTransform: new NetworkTransformComponent("players"),
+      MouseRotation: {
+        update(go, deltaTime) {
+          go.rotateY(-Input.Mouse.delta.x);
+          console.log("Delta X: ", Input.Mouse.delta.x);
+          //go.rotateAxis(go.Input.Mouse.delta.y * 0.1);
+        }
+      },
       PlayerController: {
         linSpeed: 80,
         angSpeed: 4,
         update: function(go, deltaTime) {
-          var vert = (Input.isDown(Input.Keys.UP) ? 1 : 0) + (Input.isDown(Input.Keys.DOWN) ? -1 : 0);
-          var horz = (Input.isDown(Input.Keys.RIGHT) ? 1 : 0) + (Input.isDown(Input.Keys.LEFT) ? -1 : 0);
+          var vert = (Input.isDown(Input.Keys.W) ? 1 : 0) + (Input.isDown(Input.Keys.S) ? -1 : 0);
+          var horz = (Input.isDown(Input.Keys.D) ? 1 : 0) + (Input.isDown(Input.Keys.A) ? -1 : 0);
           if(Input.isPressed(Input.Keys.SPACE)) {
             go.components.Gravity.velocity.set(0, 5, 0);
           }

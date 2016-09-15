@@ -8,6 +8,8 @@ Engine and sample JavaScript networking game with THREE.js and Firebase
 ```sh
 # Installs dependencies specified in package.json
 npm install
+# Install firebase tools and webpack globally if not yet already
+npm install -g firebase-tools webpack
 ```
 
 ```sh

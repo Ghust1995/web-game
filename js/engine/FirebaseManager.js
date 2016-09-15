@@ -1,3 +1,5 @@
+const firebase = require('firebase');
+
 FirebaseManager = {
   init: function(go) {
       var config = {

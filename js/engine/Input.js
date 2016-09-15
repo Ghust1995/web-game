@@ -8,8 +8,11 @@ Input = {
   _lastState: 0x0,
   Mouse: {
     position: {
-      x: -1, y: -1
-    }
+      x: 0, y: 0
+    },
+    delta: {
+      x: 0, y: 0
+    },
   },
 
   // Checks if key is held
@@ -35,16 +38,22 @@ Input = {
     this._currentState &= ~this.keyBits[key];
   },
 
-  onMouseMove: function( mouseX, mouseY, domElement) {
+  onMouseMove: function( mouseX, mouseY, deltaX, deltaY, event  , domElement) {
   	// calculate mouse position in normalized device coordinates
   	// (-1 to +1) for both components
     var rect = domElement.getBoundingClientRect();
 
-  	this.Mouse.position.x = 2*(_.clamp(mouseX, rect.left, rect.right) - rect.left)/rect.width - 1;
+    this.Mouse.delta.x = deltaX/rect.width;
+    this.Mouse.delta.y = deltaY/rect.height;
+
+    this.Mouse.position.x = 2*(_.clamp(mouseX, rect.left, rect.right) - rect.left)/rect.width - 1;
   	this.Mouse.position.y = 1 - 2*(_.clamp(mouseY, rect.top, rect.bottom) - rect.top)/rect.height;
   },
 
   update: function() {
+    this.Mouse.delta.x = 0;
+    this.Mouse.delta.y = 0;
+
     this._lastState = this._currentState;
   },
 
@@ -58,7 +67,7 @@ Input = {
 
     window.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
     window.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
-    window.addEventListener( 'mousemove', e => this.onMouseMove(e.clientX, e.clientY, domElement), false );
+    window.addEventListener( 'mousemove', e => this.onMouseMove(e.clientX, e.clientY, e.movementX, e.movementY, e, domElement), false );
   },
   // NOTE: Add more possible keys here (figure keycodes)
   Keys: {
