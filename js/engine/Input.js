@@ -94,7 +94,7 @@ Input = {
         // Register listeners
         document.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
         document.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
-        document.addEventListener('mousemove', e => this.onMouseMove(e.mouseX, e.mouseY, e.movementX, e.movementY, domElement), false);
+        document.addEventListener('mousemove', e => this.onMouseMove(e.clientX, e.clientY, e.movementX, e.movementY, domElement), false);
         document.addEventListener('mousedown', handleMouseDown, false);
         document.addEventListener('pointerlockchange', handleLockChange, false);
         document.addEventListener('mozpointerlockchange', handleLockChange, false);

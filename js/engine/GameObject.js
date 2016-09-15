@@ -12,8 +12,8 @@ function GameObject(name, transform, components, parent) {
   };
 
   this.transform.getForward = function() {
-    return new THREE.Vector3(0, 0, 1).applyMatrix4(this.worldMatrix);
-  };
+    return (new THREE.Vector3( 0, 0, -1 )).applyQuaternion( this.quaternion );
+  }.bind(this);
 
   this.name = name;
   parent.add(this);

@@ -95,14 +95,7 @@ return {
         angSpeed: 4,
         update: function(go, deltaTime) {
           var vert = (Input.isDown(Input.Keys.W) ? 1 : 0) + (Input.isDown(Input.Keys.S) ? -1 : 0);
-          //var horz = (Input.isDown(Input.Keys.D) ? 1 : 0) + (Input.isDown(Input.Keys.A) ? -1 : 0);
-          if(Input.isPressed(Input.Keys.SPACE)) {
-            go.components.Gravity.velocity.set(0, 5, 0);
-          }
-          var linVelocity = new THREE.Vector3(0, 0, -this.linSpeed * vert * deltaTime);
-          //var angDelta = this.angSpeed * horz * deltaTime;
-          //go.transform.rotation.y -= angDelta;
-          linVelocity.applyAxisAngle(new THREE.Vector3(0, 1, 0), go.transform.rotation.y);
+          var linVelocity = go.transform.getForward().multiplyScalar(this.linSpeed * vert * deltaTime);
           go.transform.position.add(linVelocity);
         }
       },
@@ -185,12 +178,12 @@ return {
           Camera: new CameraComponent(true),
           Crosshair: {
             raycaster: new THREE.Raycaster(),
-            // Add a better (possibly readonly reference to the scene)
             scene: null,
             init: function(go) {
               globalCamera = go.components.Camera.ref;
 
-              // TODO: add glogal reference to scene
+              // TODO: add glogal reference to scene              
+              // Add a better (possibly readonly reference to the scene)
               this.scene = go.parent.parent;
             },
             update: function (go, deltaTime) {
