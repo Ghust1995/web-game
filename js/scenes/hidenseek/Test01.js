@@ -25,39 +25,157 @@ var globalCamera;
 
 module.exports = function(Assets, Firebase) {
 return {
-  Mirror: {
-    transform: {
-      position: new THREE.Vector3(0, 375, 500),
-      rotation: new THREE.Euler(0, Math.PI, 0),
-      scale: new THREE.Vector3(1, 1, 1)
-    },
-    components: {
-      PlaneMesh: {
-        init: function(go) {
-          this.renderTarget = new THREE.WebGLRenderTarget(512, 512, { format: THREE.RGBFormat } );
-          var TVMaterial = new THREE.MeshBasicMaterial({map: this.renderTarget.texture});
-          var TVGeometry = new THREE.PlaneGeometry(1000, 750, 1, 1);
-          var TVMesh = new THREE.Mesh(TVGeometry, TVMaterial);
-          go.add(TVMesh);
-        },
-        update: function(go, deltaTime) {
-          var camChild = go.getObjectByName("Camera");
-          Engine.renderer.render(Engine.hierarchy, camChild.components.Camera.ref, this.renderTarget);
-        },
-      },
-    },
-    children: {
-      Camera: {
-        transform: {
-          position: new THREE.Vector3(0, 375, 0),
-          rotation: new THREE.Euler(Math.PI/4, Math.PI, 0),
+  Mirror1: {
+      transform: {
+          position: new THREE.Vector3(0, 375, -500),
+          rotation: new THREE.Euler(0, 0, 0),
           scale: new THREE.Vector3(1, 1, 1)
-        },
-        components: {
-          Camera: new CameraComponent(false),
-        }
+      },
+      components: {
+          PlaneMesh: {
+              init: function(go) {
+                  this.renderTarget = new THREE.WebGLRenderTarget(512, 512, {
+                      format: THREE.RGBFormat
+                  });
+                  var TVMaterial = new THREE.MeshBasicMaterial({
+                      map: this.renderTarget.texture
+                  });
+                  var TVGeometry = new THREE.PlaneGeometry(1000, 750, 1, 1);
+                  var TVMesh = new THREE.Mesh(TVGeometry, TVMaterial);
+                  go.add(TVMesh);
+              },
+              update: function(go, deltaTime) {
+                  var camChild = go.getObjectByName("Camera");
+                  Engine.renderer.render(Engine.hierarchy, camChild.components.Camera.ref, this.renderTarget);
+              },
+          },
+      },
+      children: {
+          Camera: {
+              transform: {
+                  position: new THREE.Vector3(0, 375, 500),
+                  rotation: new THREE.Euler(-Math.PI/2, 0, 0),
+                  scale: new THREE.Vector3(1, 1, 1)
+              },
+              components: {
+                  Camera: new CameraComponent(false),
+              }
+          }
       }
-    }
+  },
+  Mirror2: {
+      transform: {
+          position: new THREE.Vector3(0, 375, 500),
+          rotation: new THREE.Euler(0, Math.PI, 0),
+          scale: new THREE.Vector3(1, 1, 1)
+      },
+      components: {
+          PlaneMesh: {
+              init: function(go) {
+                  this.renderTarget = new THREE.WebGLRenderTarget(512, 512, {
+                      format: THREE.RGBFormat
+                  });
+                  var TVMaterial = new THREE.MeshBasicMaterial({
+                      map: this.renderTarget.texture
+                  });
+                  var TVGeometry = new THREE.PlaneGeometry(1000, 750, 1, 1);
+                  var TVMesh = new THREE.Mesh(TVGeometry, TVMaterial);
+                  go.add(TVMesh);
+              },
+              update: function(go, deltaTime) {
+                  var camChild = go.getObjectByName("Camera");
+                  Engine.renderer.render(Engine.hierarchy, camChild.components.Camera.ref, this.renderTarget);
+              },
+          },
+      },
+      children: {
+          Camera: {
+              transform: {
+                  position: new THREE.Vector3(0, 375, 500),
+                  rotation: new THREE.Euler(-Math.PI/2, 0, 0),
+                  scale: new THREE.Vector3(1, 1, 1)
+              },
+              components: {
+                  Camera: new CameraComponent(false),
+              }
+          }
+      }
+  },
+  Mirror3: {
+      transform: {
+          position: new THREE.Vector3(500, 375, 0),
+          rotation: new THREE.Euler(0, -Math.PI/2, 0),
+          scale: new THREE.Vector3(1, 1, 1)
+      },
+      components: {
+          PlaneMesh: {
+              init: function(go) {
+                  this.renderTarget = new THREE.WebGLRenderTarget(512, 512, {
+                      format: THREE.RGBFormat
+                  });
+                  var TVMaterial = new THREE.MeshBasicMaterial({
+                      map: this.renderTarget.texture
+                  });
+                  var TVGeometry = new THREE.PlaneGeometry(1000, 750, 1, 1);
+                  var TVMesh = new THREE.Mesh(TVGeometry, TVMaterial);
+                  go.add(TVMesh);
+              },
+              update: function(go, deltaTime) {
+                  var camChild = go.getObjectByName("Camera");
+                  Engine.renderer.render(Engine.hierarchy, camChild.components.Camera.ref, this.renderTarget);
+              },
+          },
+      },
+      children: {
+          Camera: {
+              transform: {
+                  position: new THREE.Vector3(0, 375, 500),
+                  rotation: new THREE.Euler(-Math.PI/2, 0, 0),
+                  scale: new THREE.Vector3(1, 1, 1)
+              },
+              components: {
+                  Camera: new CameraComponent(false),
+              }
+          }
+      }
+  },
+  Mirror4: {
+      transform: {
+          position: new THREE.Vector3(-500, 375, 0),
+          rotation: new THREE.Euler(0, Math.PI/2, 0),
+          scale: new THREE.Vector3(1, 1, 1)
+      },
+      components: {
+          PlaneMesh: {
+              init: function(go) {
+                  this.renderTarget = new THREE.WebGLRenderTarget(512, 512, {
+                      format: THREE.RGBFormat
+                  });
+                  var TVMaterial = new THREE.MeshBasicMaterial({
+                      map: this.renderTarget.texture
+                  });
+                  var TVGeometry = new THREE.PlaneGeometry(1000, 750, 1, 1);
+                  var TVMesh = new THREE.Mesh(TVGeometry, TVMaterial);
+                  go.add(TVMesh);
+              },
+              update: function(go, deltaTime) {
+                  var camChild = go.getObjectByName("Camera");
+                  Engine.renderer.render(Engine.hierarchy, camChild.components.Camera.ref, this.renderTarget);
+              },
+          },
+      },
+      children: {
+          Camera: {
+              transform: {
+                  position: new THREE.Vector3(0, 375, 500),
+                  rotation: new THREE.Euler(-Math.PI/2, 0, 0),
+                  scale: new THREE.Vector3(1, 1, 1)
+              },
+              components: {
+                  Camera: new CameraComponent(false),
+              }
+          }
+      }
   },
   Floor: {
     transform: {
