@@ -8,13 +8,19 @@
     "firebase": "^3.3.0",
     "jquery": "^3.1.0",
     "lodash": "^4.14.2",
-    "three": "^0.79.0"
+    "three": "^0.79.0",
+    "my-engine": "./js/my-engine"
   },
   "devDependencies": {
     "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.14.1",
+
+    "watch": "*",
+    "commander": "*",
+    "fs-extra": "*",
+    "npm": "*"
   },
   "scripts": {
-    "dev-server": "webpack --watch & firebase serve"
+    "dev-server": "start webpack --watch & start firebase serve & node .\\scripts\\watch-local-libs"
   }
 }

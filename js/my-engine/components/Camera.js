@@ -5,7 +5,7 @@
 const THREE = require('three');
 
 // Engine Modules
-const Engine = require('../engine/Engine');
+const Engine = require('../core/Engine');
 
 var DEFAULT_SPECS = {
   VIEW_ANGLE: 45,

@@ -4,21 +4,24 @@ const THREE = require('three');
 const $ = require('jquery');
 
 // Engine modules
-const Input = require('../../engine/Input');
-const Engine = require('../../engine/Engine');
-const GameObject = require('../../engine/GameObject');
+const Input = require('my-engine/core/Input');
+const Engine = require('my-engine/core/Engine');
+const GameObject = require('my-engine/core/GameObject');
 
 // Components
-const MeshComponent = require('../../coreComponents/Mesh');
-const CameraComponent = require('../../coreComponents/Camera');
-const LightComponent = require('../../coreComponents/Light');
-const NetworkTransformComponent = require('../../coreComponents/NetworkTransform');
+const MeshComponent = require('my-engine/components/Mesh');
+const CameraComponent = require('my-engine/components/Camera');
+const LightComponent = require('my-engine/components/Light');
+const NetworkTransformComponent = require('my-engine/components/NetworkTransform');
 
 // Custom Modules
-//const CustomComponents = require('./CustomComponents');
 const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
 
-var globalCamera = null;
+
+// Engine modules
+const RandomNameGenerator = require('../../random-names/RandomNames');
+
+var globalCamera;
 
 module.exports = function(Assets, Firebase) {
 return {
@@ -81,7 +84,7 @@ return {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      NetworkTransform: new NetworkTransformComponent("players", Firebase),
+      NetworkTransform: new NetworkTransformComponent("players", Firebase, RandomNameGenerator.getUnique),
       MouseRotation: {
         update(go, deltaTime) {
           go.rotateY(-Input.Mouse.delta.x);

@@ -4,18 +4,15 @@
 // Node Modules
 const _ = require('lodash');
 
-// Engine modules
-const RandomNameGenerator = require('../misc/RandomNames');
-
-function NetworkTransform(baseRef, firebase) {
+function NetworkTransform(baseRef, firebase, uuidGenerator) {
   this.baseRef = baseRef;
   this.firebase = firebase;
+  this.uuidGenerator = uuidGenerator;
 }
 
 NetworkTransform.prototype.init = function(go) {
-  RandomNameGenerator.init();
   this.key = this.firebase.database.ref(this.baseRef).push({
-    name: RandomNameGenerator.getUnique(),
+    name: this.uuidGenerator(),
     transform: {
       position: {
         x: go.transform.position.x,

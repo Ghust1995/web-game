@@ -3,10 +3,10 @@ const THREE = require('three');
 const _ = require('lodash');
 
 // Engine modules
-const GameObject = require('../../../engine/GameObject');
+const GameObject = require('my-engine/core/GameObject');
 
 // Core Components
-const MeshComponent = require('../../../coreComponents/Mesh');
+const MeshComponent = require('my-engine/components/Mesh');
 
 // Custom Components
 const NameOnHitScanComponent = require('../customComponents/NameOnHitScan');

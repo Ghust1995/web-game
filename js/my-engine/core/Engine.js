@@ -3,7 +3,8 @@ const _ = require('lodash');
 const THREE = require('three');
 
 // External modules
-const Stats = require('../../libraries/Stats');
+const Stats = require('../libraries/Stats');
+const Detector = require('../libraries/Detector');
 
 // Internal modules
 const Input = require('./Input');
@@ -11,10 +12,16 @@ const GameObject = require('./GameObject');
 const LoadAssets = require('./LoadAssets');
 const FirebaseManager = require('./FirebaseManager');
 
-Engine = {
+module.exports = {
   // TODO? Generate things to load from hierarchy
   // Compile time? or Run Time?
   run: function(rawHierarchyGenerator, thingsToLoad, config) {
+
+    if ( ! Detector.webgl ) {
+      Detector.addGetWebGLMessage();
+      return;
+    }
+
     // Waits for stuff to be loaded
     LoadAssets(thingsToLoad).then(function(assets) {
       firebase = new FirebaseManager(config.FIREBASE);
@@ -100,5 +107,3 @@ function createHierarchy(rawHierarchy) {
   })(rawHierarchy, hierarchy);
   return hierarchy;
 }
-
-module.exports = Engine;
