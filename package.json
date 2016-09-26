@@ -12,13 +12,13 @@
     "my-engine": "./js/my-engine"
   },
   "devDependencies": {
-    "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1",
-
-    "watch": "*",
+    "bluebird": "^3.4.6",
     "commander": "*",
     "fs-extra": "*",
-    "npm": "*"
+    "npm": "*",
+    "watch": "*",
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.14.1"
   },
   "scripts": {
     "dev-server": "start webpack --watch & start firebase serve & node .\\scripts\\watch-local-libs"

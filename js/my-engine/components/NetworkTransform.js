@@ -7,12 +7,13 @@ const _ = require('lodash');
 function NetworkTransform(baseRef, firebase, uuidGenerator) {
   this.baseRef = baseRef;
   this.firebase = firebase;
-  this.uuidGenerator = uuidGenerator;
+  this.name = uuidGenerator();
 }
 
 NetworkTransform.prototype.init = function(go) {
-  this.key = this.firebase.database.ref(this.baseRef).push({
-    name: this.uuidGenerator(),
+  // Push new player to firebase
+  var dbInfo = {
+    name: this.name,
     transform: {
       position: {
         x: go.transform.position.x,
@@ -30,7 +31,11 @@ NetworkTransform.prototype.init = function(go) {
         z: go.transform.scale.z
       }
     }
-  }).key;
+  };
+
+  this.key = this.firebase.database.ref(this.baseRef).push(dbInfo).key;
+
+  // Make sure player is removed when disconnected
   this.firebase.database.ref(this.baseRef + '/' + this.key).onDisconnect().remove();
 };
 
