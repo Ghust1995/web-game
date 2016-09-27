@@ -24,7 +24,7 @@ module.exports = {
 
     // Waits for stuff to be loaded
     LoadAssets(thingsToLoad).then(function(assets) {
-      firebase = new FirebaseManager(config.FIREBASE);
+      var firebase = new FirebaseManager(config.FIREBASE);
       this.init(rawHierarchyGenerator(assets, firebase), config);
       this.animate();
     }.bind(this));

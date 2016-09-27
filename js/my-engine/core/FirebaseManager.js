@@ -1,4 +1,6 @@
-const firebase = require("firebase");
+const firebase = require("firebase/app");
+require("firebase/database");
+require("firebase/auth");
 
 function FirebaseManager(config) {
       if(!config) {
