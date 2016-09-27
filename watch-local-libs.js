@@ -27,7 +27,7 @@ var p_readPackageJson = new Promise(function(resolve, reject) {
 p_readPackageJson.then((packagejson) => {
       console.log("Loaded package.json and webpack.config.js");
 
-      webpack(webpackconfig);
+      var wpcompiler = webpack(webpackconfig);
 
       npm.load(function(er) {
           dependencies = (JSON.parse(packagejson)).dependencies;

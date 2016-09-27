@@ -21,6 +21,6 @@
     "webpack-dev-server": "^1.14.1"
   },
   "scripts": {
-    "dev-server": "start webpack --watch & start firebase serve & node .\\scripts\\watch-local-libs"
+    "dev-server": "start webpack --watch & start firebase serve & node .\\watch-local-libs"
   }
 }
