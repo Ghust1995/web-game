@@ -386,7 +386,7 @@ return {
                     go.transform.position.copy(this.newTransform.position);
                     go.transform.rotation.copy(this.newTransform.rotation);
                     go.transform.scale.copy(this.newTransform.scale);
-                    
+
                     // TODO: make lerp or other predictions
                     this.hasNewTransform = false;
                   }

@@ -30,5 +30,5 @@ const RAW_HIERARCHY = require("./scenes/hidenseek/Test01");
 
 window.onload = function() {
   // Verifies if the browser supports webgl
-  Engine.run(RAW_HIERARCHY, THINGS_TO_LOAD, CONFIGURATION);
+  Engine.run(RAW_HIERARCHY, null, CONFIGURATION);
 };

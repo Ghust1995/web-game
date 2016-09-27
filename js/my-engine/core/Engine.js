@@ -31,8 +31,6 @@ module.exports = {
   },
 
   init: function(rawHierarchy, config) {
-    // Start connection with Firebase
-
     // Set specifications
     this.specs = config.INIT_SPECS;
 
@@ -42,7 +40,7 @@ module.exports = {
     //We create the WebGL renderer and add it to the document
     this.renderer = new THREE.WebGLRenderer( { antialias:true });
     this.renderer.setSize( this.specs.SCREEN_WIDTH, this.specs.SCREEN_HEIGHT );
-    var container = document.getElementById(this.specs.CONTAINER_NAME);
+    var container = document.getElementById(this.specs.CONTAINER_ID);
     container.appendChild( this.renderer.domElement );
 
     // Creates the hierarchy

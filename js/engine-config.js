@@ -4,7 +4,7 @@ module.exports =
     SCREEN_WIDTH: 800,
     SCREEN_HEIGHT: 600,
     SHOW_STATS: true,
-    CONTAINER_NAME: "WebGLContainer"
+    CONTAINER_ID: "WebGLContainer"
   },
   FIREBASE: {
     apiKey: "AIzaSyAqHGwQN2J5BHniiZG0RtrFMHmQRDAKWCQ",

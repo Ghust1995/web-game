@@ -7,7 +7,7 @@ function Load(thingsToLoad, callback) {
   // TODO: Add some support for progress (see threejs loaders)
   var assets = {};
   return new Promise(function(resolve, reject) {
-    var promises = thingsToLoad.map(function(t) {
+    var promises = _.map(thingsToLoad, (function(t) {
       return new Promise(function(resolve, reject) {
         // custom resolve
         var cResolve = (thing, data) => {
@@ -27,7 +27,7 @@ function Load(thingsToLoad, callback) {
           $.get(t.path, (data) => cResolve(t, data));
         }
       });
-    });
+    }));
     Promise.all(promises).then(values => {
       _.forEach(values, v => {
         assets[v.name] = v.data;
