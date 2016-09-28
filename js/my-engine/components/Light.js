@@ -5,7 +5,7 @@
 const THREE = require('three');
 const _ = require('lodash');
 
-LightTypes = {
+const LightTypes = {
   "ambient": THREE.AmbientLight,
   "directional": THREE.DirectionalLight,
   "hemisphere": THREE.HemisphereLight,
