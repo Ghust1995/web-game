@@ -66,7 +66,7 @@ Input = {
 
     init: function(domElement) {
         // Initialize keybits
-        this.keyBits = (_.reduce(this.Keys, function(result, val, key) {
+        this.keyBits = (_.reduce(this.Keys, function(result, val) {
             result.bits[val] = result.acc;
             result.acc *= 2;
             return result;
@@ -84,7 +84,7 @@ Input = {
                 this._locked = false;
             }
         };
-        var handleMouseDown = (e) => {
+        var handleMouseDown = () => {
             domElement.requestPointerLock = domElement.requestPointerLock ||
                 domElement.mozRequestPointerLock;
             domElement.requestPointerLock();

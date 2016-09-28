@@ -19,8 +19,6 @@ const TopDownTV = require('./customGameObjects/TopDownTV');
 // Engine modules
 const RandomNameGenerator = require('../../random-names/RandomNames');
 
-var globalCamera;
-
 module.exports = (Assets, Firebase) => ({
     transform: null, // Not sure why one would change the transform of the whole scene, but here for extensibility
     components: {}, // If you want some superior component
@@ -164,8 +162,6 @@ module.exports = (Assets, Firebase) => ({
                             raycaster: new THREE.Raycaster(),
                             scene: null,
                             init: function(go) {
-                                globalCamera = go.components.Camera.ref;
-
                                 // TODO: add glogal reference to scene
                                 // Add a better (possibly readonly reference to the scene)
                                 this.scene = go.parent.parent;

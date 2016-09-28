@@ -3,12 +3,12 @@ const _ = require('lodash');
 const $ = require('jquery');
 
 // Loads things specified on THINGS_TO_LOAD
-function Load(thingsToLoad, callback) {
+function Load(thingsToLoad) {
   // TODO: Add some support for progress (see threejs loaders)
   var assets = {};
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(resolve/*, reject*/) {
     var promises = _.map(thingsToLoad, (function(t) {
-      return new Promise(function(resolve, reject) {
+      return new Promise(function(resolve/*, reject*/) {
         // custom resolve
         var cResolve = (thing, data) => {
           if(_.has(thing, 'init')){

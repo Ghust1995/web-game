@@ -1,7 +1,6 @@
 // Node modules
-const _ = require('lodash');
+//const _ = require('lodash');
 const THREE = require('three');
-const $ = require('jquery');
 
 // Internal modules
 const Engine = require('my-engine');

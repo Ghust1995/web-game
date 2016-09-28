@@ -1,9 +1,6 @@
 // NetworkTransform Components
 // This component ensures that the transform of this object is stored in the Firebase DB on the given base ref
 
-// Node Modules
-const _ = require('lodash');
-
 module.exports = (baseRef, firebase, uuidGenerator) => ({
   baseRef: baseRef,
   firebase: firebase,

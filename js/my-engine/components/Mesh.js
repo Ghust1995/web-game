@@ -9,7 +9,7 @@ const _ = require('lodash');
 module.exports = (geometry, material, layer) => ({
   geometry: new geometry.type(...geometry.params),
   material: new material.type(material.params),
-  layer: "Default",
+  layer: "Default" || layer,
   init: function (go) {
     // should add global reference
     var mesh = new THREE.Mesh(this.geometry, this.material);
