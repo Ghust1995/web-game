@@ -3,7 +3,7 @@
 
 const _ = require('lodash');
 
-Input = {
+var Input = {
     _currentState: 0x0,
     _lastState: 0x0,
     Mouse: {
