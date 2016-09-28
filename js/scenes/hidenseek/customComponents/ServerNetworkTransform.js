@@ -1,6 +1,6 @@
 const THREE = require('three');
 
-module.exports = (key, position, rotation, scale) => ({
+module.exports = (key) => ({
     key: key,
     hasNewTransform: false,
     newTransform: {

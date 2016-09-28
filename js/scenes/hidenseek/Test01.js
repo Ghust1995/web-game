@@ -364,7 +364,7 @@ return {
             var scale = val.transform.scale;
             var rotation = val.transform.rotation;
             var name = val.name;
-            // TODO: ServerNetworkTransform
+
             var baseGameObject = new this.BaseGameObject(
               name, {
                 position: new THREE.Vector3(position.x, position.y, position.z),
@@ -373,8 +373,6 @@ return {
               },
               go,
               data.key);
-
-            //baseGameObject.AddComponents(ServerNetworkTransform(data.key, position, rotation, scale));
           }.bind(this);
 
           var updateNetPlayer = function(data) {

@@ -29,7 +29,7 @@ function ServerPlayerView(name, transform, parent, key) {
         }
       ),
       Hitscan: NameOnHitScanComponent(),
-      ServerNetworkTransform: ServerNetworkTransform(key, 0, 0, 0)
+      ServerNetworkTransform: ServerNetworkTransform(key),
     }, parent);
 }
 
