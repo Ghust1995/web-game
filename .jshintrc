@@ -1,3 +1,8 @@
 {
-  "esnext": true
+  "esnext": true,
+  "strict": "implied",
+  "browserify": true,
+  "devel": true,
+  "unused": true,
+  "undef": true
 }
