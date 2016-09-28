@@ -11,6 +11,7 @@ const Input = require('./Input');
 const GameObject = require('./GameObject');
 const LoadAssets = require('./LoadAssets');
 const FirebaseManager = require('./FirebaseManager');
+const Instantiate = require("./Instantiate");
 
 module.exports = {
   // TODO? Generate things to load from hierarchy
@@ -25,12 +26,13 @@ module.exports = {
     // Waits for stuff to be loaded
     LoadAssets(thingsToLoad).then(function(assets) {
       var firebase = new FirebaseManager(config.FIREBASE);
-      this.init(rawHierarchyGenerator(assets, firebase), config);
+      var deps = {Firebase: firebase, Assets: assets};
+      this.init(rawHierarchyGenerator, deps, config);
       this.animate();
     }.bind(this));
   },
 
-  init: function(rawHierarchy, config) {
+  init: function(rawHierarchyGenerator, deps, config) {
     // Set specifications
     this.specs = config.INIT_SPECS;
 
@@ -44,7 +46,7 @@ module.exports = {
     container.appendChild( this.renderer.domElement );
 
     // Creates the hierarchy
-    this.hierarchy = createHierarchy(rawHierarchy);
+    this.hierarchy = createHierarchy(rawHierarchyGenerator, deps);
 
     // Stats display
     if(this.specs.SHOW_STATS) {
@@ -88,20 +90,10 @@ module.exports = {
 };
 
 // Hierarchy creates a scene and adds everything specified on rawHierarchy
-function createHierarchy(rawHierarchy) {
+function createHierarchy(rawHierarchyGenerator, deps) {
   // Extending scene base to be an Hierarchy
   // This is basically a scene with GameObject children
   var hierarchy = new THREE.Scene();
-  // Recursively constructs game objects and add them to their parents;
-  (function createAllChildren(childrenRaw, parentgo) {
-    _.forIn(childrenRaw, function (val, key) {
-      var newGO = new GameObject( key,
-                                  val.transform,
-                                  val.components,
-                                  parentgo);
-
-      createAllChildren(val.children, newGO);
-    });
-  })(rawHierarchy, hierarchy);
+  Instantiate(rawHierarchyGenerator, "Scene", hierarchy, deps);
   return hierarchy;
 }
