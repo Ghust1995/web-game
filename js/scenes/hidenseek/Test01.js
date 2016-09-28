@@ -17,7 +17,6 @@ const NetworkTransformComponent = require('my-engine/components/NetworkTransform
 // Custom Modules
 const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
 
-
 // Engine modules
 const RandomNameGenerator = require('../../random-names/RandomNames');
 
@@ -366,33 +365,16 @@ return {
             var rotation = val.transform.rotation;
             var name = val.name;
             // TODO: ServerNetworkTransform
-            var baseGameObject = new this.BaseGameObject(name, null, go);
+            var baseGameObject = new this.BaseGameObject(
+              name, {
+                position: new THREE.Vector3(position.x, position.y, position.z),
+                rotation: new THREE.Euler(rotation.x, rotation.y, rotation.z),
+                scale: new THREE.Vector3(scale.x, scale.y, scale.z)
+              },
+              go,
+              data.key);
 
-            baseGameObject.AddComponents({ServerNetworkTransform: {
-                key: data.key,
-                hasNewTransform: false,
-                newTransform: {
-                  position: new THREE.Vector3(0, 0, 0),
-                  rotation: new THREE.Euler(0, 0, 0),
-                  scale: new THREE.Vector3(1, 1, 1)
-                },
-                init: function(go) {
-                  go.transform.position.copy(new THREE.Vector3(position.x, position.y, position.z));
-                  go.transform.rotation.copy(new THREE.Euler(rotation.x, rotation.y, rotation.z));
-                  go.transform.scale.copy(new THREE.Vector3(scale.x, scale.y, scale.z));
-                },
-                update: function(go, deltaTime) {
-                  if(this.hasNewTransform) {
-                    go.transform.position.copy(this.newTransform.position);
-                    go.transform.rotation.copy(this.newTransform.rotation);
-                    go.transform.scale.copy(this.newTransform.scale);
-
-                    // TODO: make lerp or other predictions
-                    this.hasNewTransform = false;
-                  }
-                }
-              }
-            });
+            //baseGameObject.AddComponents(ServerNetworkTransform(data.key, position, rotation, scale));
           }.bind(this);
 
           var updateNetPlayer = function(data) {
@@ -402,12 +384,15 @@ return {
             var rotation = val.transform.rotation;
             var player = _.find(go.children, (c) => c.components.ServerNetworkTransform &&
                                                     c.components.ServerNetworkTransform.key === data.key);
-            player.components.ServerNetworkTransform.hasNewTransform = true;
-            player.components.ServerNetworkTransform.newTransform = {
+            if(!player) {
+              console.warn("No player found on transform update");
+              return;
+            }
+            player.components.ServerNetworkTransform.emitTransformChange({
               position: new THREE.Vector3(position.x, position.y, position.z),
               rotation: new THREE.Euler(rotation.x, rotation.y, rotation.z),
               scale: new THREE.Vector3(scale.x, scale.y, scale.z)
-            };
+            });
           };
 
           var removeNetPlayer = function(data) {

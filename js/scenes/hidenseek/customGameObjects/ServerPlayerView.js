@@ -10,8 +10,9 @@ const MeshComponent = require('my-engine/components/Mesh');
 
 // Custom Components
 const NameOnHitScanComponent = require('../customComponents/NameOnHitScan');
+const ServerNetworkTransform = require('../customComponents/ServerNetworkTransform');
 
-function ServerPlayerView(name, transform, parent) {
+function ServerPlayerView(name, transform, parent, key) {
   GameObject.call(this,
     name,
     transform,
@@ -27,7 +28,8 @@ function ServerPlayerView(name, transform, parent) {
           }
         }
       ),
-      Hitscan: new NameOnHitScanComponent(),
+      Hitscan: NameOnHitScanComponent(),
+      ServerNetworkTransform: ServerNetworkTransform(key, 0, 0, 0)
     }, parent);
 }
 
