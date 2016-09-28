@@ -13,14 +13,11 @@ LightTypes = {
   "spot": THREE.SpotLight,
 };
 
-function Light(type, ...params) {
-  this.type = LightTypes[_.lowerCase(type)];
-  this.params = params;
-}
-
-Light.prototype.init = function (go) {
-  var Light = new this.type(...this.params);
-  go.add(Light);
-};
-
-module.exports = Light;
+module.exports = (type, ...params) => ({
+  type: LightTypes[_.lowerCase(type)],
+  params: params,
+  init: function (go) {
+    var Light = new this.type(...this.params);
+    go.add(Light);
+  }
+});
