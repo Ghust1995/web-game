@@ -4,11 +4,15 @@ const _ = require('lodash');
 
 // Engine modules
 const Input = require('my-engine/core/Input');
+const Instantiate = require('my-engine/core/Instantiate');
 
 // Core components
 const MeshComponent = require('my-engine/components/Mesh');
 const CameraComponent = require('my-engine/components/Camera');
 const NetworkTransformComponent = require('my-engine/components/NetworkTransform');
+
+// Custom Game Objects
+const Bullet = require('./Bullet');
 
 // Custom modules
 const RandomNameGenerator = require('../../../random-names/RandomNames');
@@ -34,6 +38,11 @@ module.exports = (Firebase) => ({
                 var vert = (Input.isDown(Input.Keys.W) ? 1 : 0) + (Input.isDown(Input.Keys.S) ? -1 : 0);
                 var linVelocity = go.transform.getForward().multiplyScalar(this.linSpeed * vert * deltaTime);
                 go.transform.position.add(linVelocity);
+                if(Input.isPressed(Input.Keys.MOUSE_L)) {
+                  Instantiate(Bullet, "Bullet", go.parent, {
+                    transform: go.transform
+                  });
+                }
             }
         },
         Gravity: {

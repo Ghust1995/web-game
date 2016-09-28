@@ -26,7 +26,7 @@ function InstantiateRecursive(raw, name, parent) {
 function getArgs(func) {
     // Match ... (param1, param2) ... => "param1, param2"
     var args = func.toString().match(/\(([^)]*)\)/)[1];
-
+    if(args === "") return null;
     // Split "param1, param2" => ["param1", "param2"]
     return _.map(
         _.split(args, ','),

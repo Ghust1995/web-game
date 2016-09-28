@@ -85,20 +85,27 @@ var Input = {
             }
         };
         var handleMouseDown = () => {
+          if(!this._locked) {
             domElement.requestPointerLock = domElement.requestPointerLock ||
                 domElement.mozRequestPointerLock;
             domElement.requestPointerLock();
+          }
+          else {
+
+          }
         };
 
-
         // Register listeners
-        document.addEventListener('keyup', e => this.onKeyUp(e.keyCode));
-        document.addEventListener('keydown', e => this.onKeyDown(e.keyCode));
-        document.addEventListener('mousemove', e => this.onMouseMove(e.clientX, e.clientY, e.movementX, e.movementY, domElement), false);
+        document.addEventListener('keyup', (e) => this.onKeyUp(e.keyCode));
+        document.addEventListener('keydown', (e) => this.onKeyDown(e.keyCode));
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e.clientX, e.clientY, e.movementX, e.movementY, domElement), false);
         document.addEventListener('mousedown', handleMouseDown, false);
+        document.addEventListener('mousedown', () => this.onKeyDown(this.Keys.MOUSE_L), false);
+        document.addEventListener('mouseup', () => this.onKeyUp(this.Keys.MOUSE_L), false);
         document.addEventListener('pointerlockchange', handleLockChange, false);
         document.addEventListener('mozpointerlockchange', handleLockChange, false);
     },
+
     // NOTE: Add more possible keys here (figure keycodes)
     Keys: {
         UP: 38,
@@ -116,6 +123,7 @@ var Input = {
         ALT: 18,
         ENTER: 13,
         ESC: 27,
+        MOUSE_L: -1,
     },
 };
 
