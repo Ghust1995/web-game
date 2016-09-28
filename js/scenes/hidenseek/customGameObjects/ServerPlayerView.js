@@ -17,7 +17,7 @@ function ServerPlayerView(name, transform, parent, key) {
     name,
     transform,
     {
-      Mesh: new MeshComponent({
+      Mesh: MeshComponent({
           type: THREE.SphereGeometry,
           params: [20, 32, 32]
         },

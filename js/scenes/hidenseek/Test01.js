@@ -57,7 +57,7 @@ return {
                   scale: new THREE.Vector3(1, 1, 1)
               },
               components: {
-                  Camera: new CameraComponent(false),
+                  Camera: CameraComponent(false),
               }
           }
       }
@@ -95,7 +95,7 @@ return {
                   scale: new THREE.Vector3(1, 1, 1)
               },
               components: {
-                  Camera: new CameraComponent(false),
+                  Camera: CameraComponent(false),
               }
           }
       }
@@ -133,7 +133,7 @@ return {
                   scale: new THREE.Vector3(1, 1, 1)
               },
               components: {
-                  Camera: new CameraComponent(false),
+                  Camera: CameraComponent(false),
               }
           }
       }
@@ -171,7 +171,7 @@ return {
                   scale: new THREE.Vector3(1, 1, 1)
               },
               components: {
-                  Camera: new CameraComponent(false),
+                  Camera: CameraComponent(false),
               }
           }
       }
@@ -183,7 +183,7 @@ return {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      Mesh: new MeshComponent({
+      Mesh: MeshComponent({
           type: THREE.PlaneGeometry,
           params: [1000, 1000, 10, 10]
         },
@@ -201,7 +201,7 @@ return {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      NetworkTransform: new NetworkTransformComponent("players", Firebase, RandomNameGenerator.getUnique),
+      NetworkTransform: NetworkTransformComponent("players", Firebase, RandomNameGenerator.getUnique),
       MouseRotation: {
         update(go, deltaTime) {
           go.rotateY(-Input.Mouse.delta.x);
@@ -235,7 +235,7 @@ return {
           scale: new THREE.Vector3(1, 1, 1)
         },
         components: {
-          Mesh: new MeshComponent({
+          Mesh: MeshComponent({
             type: THREE.CylinderGeometry,
             params: [1, 5, 60]
           },
@@ -254,7 +254,7 @@ return {
           scale: new THREE.Vector3(1, 1, 1)
         },
         components: {
-          Mesh: new MeshComponent({
+          Mesh: MeshComponent({
             type: THREE.CylinderGeometry,
             params: [10, 10, 5]
           },
@@ -273,7 +273,7 @@ return {
           scale: new THREE.Vector3(1, 1, 1)
         },
         components: {
-          Mesh: new MeshComponent({
+          Mesh: MeshComponent({
               type: THREE.SphereGeometry,
               params: [10, 32, 32]
             },
@@ -293,7 +293,7 @@ return {
           scale: new THREE.Vector3(1, 1, 1)
         },
         components: {
-          Camera: new CameraComponent(true),
+          Camera: CameraComponent(true),
           Crosshair: {
             raycaster: new THREE.Raycaster(),
             scene: null,
@@ -330,7 +330,7 @@ return {
   },
   Skybox: {
     components: {
-      Mesh: new MeshComponent({
+      Mesh: MeshComponent({
           type: THREE.CubeGeometry,
           params: [10000, 10000, 10000]
         },
@@ -348,8 +348,8 @@ return {
       scale: new THREE.Vector3(1, 1, 1)
     },
     components: {
-      SpotLight: new LightComponent("spot", 0xffffff, 5.0, 1000, Math.PI/4, 0.5, 2),
-      AmbientLight: new LightComponent("ambient", 0xFF00FF, 0.25),
+      SpotLight: LightComponent("spot", 0xffffff, 5.0, 1000, Math.PI/4, 0.5, 2),
+      AmbientLight: LightComponent("ambient", 0xFF00FF, 0.25),
     }
   },
   NetworkPlayers: {
