@@ -1,272 +1,91 @@
 // Node modules
-const _ = require('lodash');
+//const _ = require('lodash');
 const THREE = require('three');
 
 // Engine modules
-const Input = require('my-engine/core/Input');
-const Instantiate = require('my-engine/core/Instantiate');
 
 // Components
 const MeshComponent = require('my-engine/components/Mesh');
-const CameraComponent = require('my-engine/components/Camera');
 const LightComponent = require('my-engine/components/Light');
-const NetworkTransformComponent = require('my-engine/components/NetworkTransform');
 
 // Custom Game Objects
-const ServerPlayerView = require('./customGameObjects/ServerPlayerView');
 const TopDownTV = require('./customGameObjects/TopDownTV');
-
-// Engine modules
-const RandomNameGenerator = require('../../random-names/RandomNames');
+const Player = require('./customGameObjects/Player');
+const NetworkPlayers = require('./customGameObjects/NetworkPlayers');
 
 module.exports = (Assets, Firebase) => ({
     transform: null, // Not sure why one would change the transform of the whole scene, but here for extensibility
     components: {}, // If you want some superior component
     children: {
-        Mirror1: TopDownTV({
-            position: new THREE.Vector3(0, 375, -500),
-            rotation: new THREE.Euler(0, 0, 0),
-            scale: new THREE.Vector3(1, 1, 1)
-        }),
-        Mirror2: TopDownTV({
-            position: new THREE.Vector3(0, 375, 500),
-            rotation: new THREE.Euler(0, Math.PI, 0),
-            scale: new THREE.Vector3(1, 1, 1)
-        }),
-        Mirror3: TopDownTV({
-            position: new THREE.Vector3(500, 375, 0),
-            rotation: new THREE.Euler(0, -Math.PI / 2, 0),
-            scale: new THREE.Vector3(1, 1, 1)
-        }),
-        Mirror4: TopDownTV({
-            position: new THREE.Vector3(-500, 375, 0),
-            rotation: new THREE.Euler(0, Math.PI / 2, 0),
-            scale: new THREE.Vector3(1, 1, 1)
-        }),
-        Floor: {
-            transform: {
-                position: new THREE.Vector3(0, 0, 0),
-                rotation: new THREE.Euler(Math.PI / 2, 0, 0),
-                scale: new THREE.Vector3(1, 1, 1)
-            },
-            components: {
-                Mesh: MeshComponent({
-                    type: THREE.PlaneGeometry,
-                    params: [1000, 1000, 10, 10]
-                }, {
-                    type: THREE.MeshPhongMaterial,
-                    params: {
-                        map: Assets.floorTexture,
-                        side: THREE.DoubleSide
-                    }
-                })
-            }
-        },
-        Player: {
-            transform: {
-                position: new THREE.Vector3(0, 32, 0),
-                rotation: new THREE.Euler(0, 0, 0),
-                scale: new THREE.Vector3(1, 1, 1)
-            },
-            components: {
-                NetworkTransform: NetworkTransformComponent("players", Firebase, RandomNameGenerator.getUnique),
-                MouseRotation: {
-                    update(go /*, deltaTime*/ ) {
-                        go.rotateY(-Input.Mouse.delta.x);
-                        //go.rotateAxis(go.Input.Mouse.delta.y * 0.1);
-                    }
-                },
-                PlayerController: {
-                    linSpeed: 80,
-                    angSpeed: 4,
-                    update: function(go, deltaTime) {
-                        var vert = (Input.isDown(Input.Keys.W) ? 1 : 0) + (Input.isDown(Input.Keys.S) ? -1 : 0);
-                        var linVelocity = go.transform.getForward().multiplyScalar(this.linSpeed * vert * deltaTime);
-                        go.transform.position.add(linVelocity);
-                    }
-                },
-                Gravity: {
-                    velocity: new THREE.Vector3(0, 0, 0),
-                    update: function(go, deltaTime) {
-                        go.transform.position.add(this.velocity);
-                        this.velocity.add(new THREE.Vector3(0, (-35) * deltaTime, 0));
-                        if (go.transform.position.y < 32 && this.velocity.y < 0)
-                            this.velocity.y = 0.0;
-                    }
-                }
-            },
+        Player: Player(Firebase),
+        NetworkPlayers: NetworkPlayers(Firebase),
+        World: {
             children: {
-                Sword: {
+                Skybox: {
+                    components: {
+                        Mesh: MeshComponent({
+                            type: THREE.CubeGeometry,
+                            params: [10000, 10000, 10000]
+                        }, {
+                            type: THREE.MeshBasicMaterial,
+                            params: {
+                                color: 0xAA419D,
+                                side: THREE.BackSide
+                            }
+                        })
+                    }
+                },
+                Light: {
                     transform: {
-                        position: new THREE.Vector3(-20, 0, -30),
-                        rotation: new THREE.Euler(-Math.PI / 2, 0, 0),
+                        position: new THREE.Vector3(0, 500, 0),
+                        rotation: new THREE.Euler(0, 0, 0),
                         scale: new THREE.Vector3(1, 1, 1)
                     },
                     components: {
-                        Mesh: MeshComponent({
-                            type: THREE.CylinderGeometry,
-                            params: [1, 5, 60]
-                        }, {
-                            type: THREE.MeshPhongMaterial,
-                            params: {
-                                color: 0xFFFFFF
-                            }
-                        }),
-                    },
+                        SpotLight: LightComponent("spot", 0xffffff, 5.0, 1000, Math.PI / 4, 0.5, 2),
+                        AmbientLight: LightComponent("ambient", 0xFF00FF, 0.25),
+                    }
                 },
-                Shield: {
+                Mirror1: TopDownTV({
+                    position: new THREE.Vector3(0, 375, -500),
+                    rotation: new THREE.Euler(0, 0, 0),
+                    scale: new THREE.Vector3(1, 1, 1)
+                }),
+                Mirror2: TopDownTV({
+                    position: new THREE.Vector3(0, 375, 500),
+                    rotation: new THREE.Euler(0, Math.PI, 0),
+                    scale: new THREE.Vector3(1, 1, 1)
+                }),
+                Mirror3: TopDownTV({
+                    position: new THREE.Vector3(500, 375, 0),
+                    rotation: new THREE.Euler(0, -Math.PI / 2, 0),
+                    scale: new THREE.Vector3(1, 1, 1)
+                }),
+                Mirror4: TopDownTV({
+                    position: new THREE.Vector3(-500, 375, 0),
+                    rotation: new THREE.Euler(0, Math.PI / 2, 0),
+                    scale: new THREE.Vector3(1, 1, 1)
+                }),
+                Floor: {
                     transform: {
-                        position: new THREE.Vector3(20, 0, -20),
+                        position: new THREE.Vector3(0, 0, 0),
                         rotation: new THREE.Euler(Math.PI / 2, 0, 0),
                         scale: new THREE.Vector3(1, 1, 1)
                     },
                     components: {
                         Mesh: MeshComponent({
-                            type: THREE.CylinderGeometry,
-                            params: [10, 10, 5]
+                            type: THREE.PlaneGeometry,
+                            params: [1000, 1000, 10, 10]
                         }, {
                             type: THREE.MeshPhongMaterial,
                             params: {
-                                color: 0xFFFFFF
+                                map: Assets.floorTexture,
+                                side: THREE.DoubleSide
                             }
-                        }),
-                    },
-                },
-                Head: {
-                    transform: {
-                        position: new THREE.Vector3(0, 30, 0),
-                        rotation: new THREE.Euler(0, 0, 0),
-                        scale: new THREE.Vector3(1, 1, 1)
-                    },
-                    components: {
-                        Mesh: MeshComponent({
-                            type: THREE.SphereGeometry,
-                            params: [10, 32, 32]
-                        }, {
-                            type: THREE.MeshPhongMaterial,
-                            params: {
-                                color: Math.random() * 0xFFFFFF
-                            }
-                        }),
-                    },
-                },
-                ThirdPersonCamera: {
-                    transform: {
-                        position: new THREE.Vector3(0, 50, 300),
-                        rotation: new THREE.Euler(0, 0, 0),
-                        scale: new THREE.Vector3(1, 1, 1)
-                    },
-                    components: {
-                        Camera: CameraComponent(true),
-                        Crosshair: {
-                            raycaster: new THREE.Raycaster(),
-                            scene: null,
-                            init: function(go) {
-                                // TODO: add glogal reference to scene
-                                // Add a better (possibly readonly reference to the scene)
-                                this.scene = go.parent.parent;
-                            },
-                            update: function(go /*, deltaTime*/ ) {
-                                this.raycaster.setFromCamera(new THREE.Vector2(Input.Mouse.position.x, Input.Mouse.position.y), go.components.Camera.ref);
-                                var objsToTest = this.scene.getObjectByName("NetworkPlayers");
-                                var intersects = this.raycaster.intersectObjects(objsToTest.children, true);
-                                if (intersects.length > 0) {
-                                    //
-                                    var hitObjects = _.map(intersects, (i) => objsToTest.getObjectById(i.object.id));
-                                    var firstHit = _.find(
-                                        hitObjects,
-                                        (h) => h.layer === "Default");
-                                    if (firstHit) {
-                                        if (_.hasIn(firstHit, 'onHitScan')) {
-                                            firstHit.onHitScan();
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                    },
-                },
-            }
-        },
-        Skybox: {
-            components: {
-                Mesh: MeshComponent({
-                    type: THREE.CubeGeometry,
-                    params: [10000, 10000, 10000]
-                }, {
-                    type: THREE.MeshBasicMaterial,
-                    params: {
-                        color: 0xAA419D,
-                        side: THREE.BackSide
+                        })
                     }
-                })
+                },
             }
         },
-        Light: {
-            transform: {
-                position: new THREE.Vector3(0, 500, 0),
-                rotation: new THREE.Euler(0, 0, 0),
-                scale: new THREE.Vector3(1, 1, 1)
-            },
-            components: {
-                SpotLight: LightComponent("spot", 0xffffff, 5.0, 1000, Math.PI / 4, 0.5, 2),
-                AmbientLight: LightComponent("ambient", 0xFF00FF, 0.25),
-            }
-        },
-        NetworkPlayers: {
-            components: {
-                NetworkPlayers: {
-                    PLAYER_LIMIT: 10,
-                    BaseGameObject: ServerPlayerView,
-                    init: function(go) {
-                        var getNetPlayer = function(data) {
-                            var val = data.val();
-                            var position = val.transform.position;
-                            var scale = val.transform.scale;
-                            var rotation = val.transform.rotation;
-                            var name = val.name;
-
-                            Instantiate(this.BaseGameObject, name, go, {
-                                transform: {
-                                    position: new THREE.Vector3(position.x, position.y, position.z),
-                                    rotation: new THREE.Euler(rotation.x, rotation.y, rotation.z),
-                                    scale: new THREE.Vector3(scale.x, scale.y, scale.z)
-                                },
-                                key: data.key
-                            });
-                        }.bind(this);
-
-                        var updateNetPlayer = function(data) {
-                            var val = data.val();
-                            var position = val.transform.position;
-                            var scale = val.transform.scale;
-                            var rotation = val.transform.rotation;
-                            var player = _.find(go.children, (c) => c.components.ServerNetworkTransform &&
-                                c.components.ServerNetworkTransform.key === data.key);
-                            if (!player) {
-                                console.warn("No player found on transform update");
-                                return;
-                            }
-                            player.components.ServerNetworkTransform.emitTransformChange({
-                                position: new THREE.Vector3(position.x, position.y, position.z),
-                                rotation: new THREE.Euler(rotation.x, rotation.y, rotation.z),
-                                scale: new THREE.Vector3(scale.x, scale.y, scale.z)
-                            });
-                        };
-
-                        var removeNetPlayer = function(data) {
-                            var player = _.find(go.children, (c) => c.components.ServerNetworkTransform &&
-                                c.components.ServerNetworkTransform.key === data.key);
-                            console.log("DESTROYED SOMEONE");
-                            go.remove(player);
-                        };
-
-                        Firebase.database.ref("players").limitToLast(10).on('child_added', getNetPlayer);
-                        Firebase.database.ref("players").limitToLast(10).on('child_changed', updateNetPlayer);
-                        Firebase.database.ref("players").on('child_removed', removeNetPlayer);
-                    }
-                }
-            }
-        }
     }
 });
