@@ -1,6 +1,7 @@
 var Webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var webpackConfig = require('../webpack.config');
+var WatchLocalLibs = require('./watch-local-libs');
 
 function Bundle() {
 
@@ -30,7 +31,7 @@ function Bundle() {
     publicPath: '/build/',
 
     contentBase: './public',
-    
+
     quiet: false,
     noInfo: true,
     // The rest is terminal configurations
@@ -38,6 +39,9 @@ function Bundle() {
       colors: true
     }
   });
+
+  // Start watching local libs
+  WatchLocalLibs(compiler);
 
   // We fire up the development server and give notice in the terminal
   // that we are starting the initial bundle

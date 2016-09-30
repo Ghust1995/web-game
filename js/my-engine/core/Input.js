@@ -16,6 +16,7 @@ var Input = {
             y: 0
         },
     },
+
     // TODO: Learn about mouse sensitivity
     Sensitivity: 0.01,
     _locked: false,
