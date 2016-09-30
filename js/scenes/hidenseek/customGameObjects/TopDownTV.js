@@ -1,7 +1,8 @@
 const THREE = require('three');
 
+// Engine Modules
 const Engine = require('my-engine/core/Engine');
-const CameraComponent = require('my-engine/components/camera');
+const CameraComponent = require('my-engine/components/Camera');
 
 module.exports = (transform) => ({
     transform: transform,
