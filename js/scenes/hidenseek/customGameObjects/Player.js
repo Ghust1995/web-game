@@ -36,8 +36,14 @@ module.exports = (Firebase) => ({
             angSpeed: 4,
             update: function(go, deltaTime) {
                 var vert = (Input.isDown(Input.Keys.W) ? 1 : 0) + (Input.isDown(Input.Keys.S) ? -1 : 0);
-                var linVelocity = go.transform.getForward().multiplyScalar(this.linSpeed * vert * deltaTime);
-                go.transform.position.add(linVelocity);
+                var velocity = go.transform.getForward().multiplyScalar(this.linSpeed * vert * deltaTime);
+
+                var horz = (Input.isDown(Input.Keys.D) ? 1 : 0) + (Input.isDown(Input.Keys.A) ? -1 : 0);
+                velocity.add(go.transform.getRight().multiplyScalar(this.linSpeed * horz * deltaTime));
+
+                go.transform.position.add(velocity);
+
+
                 if(Input.isPressed(Input.Keys.MOUSE_L)) {
                   Instantiate(Bullet, "Bullet", go.parent, {
                     transform: go.transform
@@ -45,13 +51,23 @@ module.exports = (Firebase) => ({
                 }
             }
         },
-        Gravity: {
+        Jump: {
             velocity: new THREE.Vector3(0, 0, 0),
+            jumpImpulse: 10,
+            grouded: false,
             update: function(go, deltaTime) {
+                if(Input.isPressed(Input.Keys.SPACE) && this.grouded) {
+                  this.velocity.add(go.transform.getUp().multiplyScalar(this.jumpImpulse));
+                  this.grouded = false;
+                }
                 go.transform.position.add(this.velocity);
                 this.velocity.add(new THREE.Vector3(0, (-35) * deltaTime, 0));
                 if (go.transform.position.y < 32 && this.velocity.y < 0)
-                    this.velocity.y = 0.0;
+                {
+                  this.velocity.y = 0.0;
+                  this.grouded = true;
+                }
+
             }
         }
     },
