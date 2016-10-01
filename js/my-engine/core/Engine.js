@@ -58,7 +58,7 @@ module.exports = {
     }
 
     //Input
-    Input.init(this.renderer.domElement);
+    Input.init(container.querySelector('canvas'));
   },
 
   // Works as the main loop

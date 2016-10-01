@@ -15,6 +15,14 @@ function GameObject(name, transform, components, parent) {
     return (new THREE.Vector3( 0, 0, -1 )).applyQuaternion( this.quaternion );
   }.bind(this);
 
+  this.transform.getRight = function() {
+    return (new THREE.Vector3( 1, 0, 0 )).applyQuaternion( this.quaternion );
+  }.bind(this);
+
+  this.transform.getUp = function() {
+    return (new THREE.Vector3( 0, 1, 0 )).applyQuaternion( this.quaternion );
+  }.bind(this);
+
   this.name = name;
   parent.add(this);
 

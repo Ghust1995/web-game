@@ -44,8 +44,8 @@ var Input = {
         this._currentState &= ~this.keyBits[key];
     },
 
-    onMouseMove: function(mouseX, mouseY, deltaX, deltaY, domElement) {
-        var rect = domElement.getBoundingClientRect();
+    onMouseMove: function(mouseX, mouseY, deltaX, deltaY, canvas) {
+        var rect = canvas.getBoundingClientRect();
 
         // NOTE: Might make sense to normalize this to -1 ~ +1
         this.Mouse.delta.x = this._locked ? deltaX * this.Sensitivity : 0;
@@ -65,7 +65,7 @@ var Input = {
         this._lastState = this._currentState;
     },
 
-    init: function(domElement) {
+    init: function(canvas) {
         // Initialize keybits
         this.keyBits = (_.reduce(this.Keys, function(result, val) {
             result.bits[val] = result.acc;
@@ -78,8 +78,8 @@ var Input = {
 
         // Create evend handlers
         var handleLockChange = () => {
-            if (document.pointerLockElement === domElement ||
-                document.mozPointerLockElement === domElement) {
+            if (document.pointerLockElement === canvas ||
+                document.mozPointerLockElement === canvas) {
                 this._locked = true;
             } else {
                 this._locked = false;
@@ -87,24 +87,23 @@ var Input = {
         };
         var handleMouseDown = () => {
           if(!this._locked) {
-            domElement.requestPointerLock = domElement.requestPointerLock ||
-                domElement.mozRequestPointerLock;
-            domElement.requestPointerLock();
-          }
-          else {
-
+            canvas.requestPointerLock = canvas.requestPointerLock ||
+                canvas.mozRequestPointerLock;
+            canvas.requestPointerLock();
           }
         };
 
-        // Register listeners
-        document.addEventListener('keyup', (e) => this.onKeyUp(e.keyCode));
-        document.addEventListener('keydown', (e) => this.onKeyDown(e.keyCode));
-        document.addEventListener('mousemove', (e) => this.onMouseMove(e.clientX, e.clientY, e.movementX, e.movementY, domElement), false);
-        document.addEventListener('mousedown', handleMouseDown, false);
-        document.addEventListener('mousedown', () => this.onKeyDown(this.Keys.MOUSE_L), false);
-        document.addEventListener('mouseup', () => this.onKeyUp(this.Keys.MOUSE_L), false);
+        // Pointer lock stuff
+        canvas.addEventListener('click', handleMouseDown, false);
         document.addEventListener('pointerlockchange', handleLockChange, false);
         document.addEventListener('mozpointerlockchange', handleLockChange, false);
+
+        // Register listeners
+        document.addEventListener('keyup', (e) => this._locked && this.onKeyUp(e.keyCode));
+        document.addEventListener('keydown', (e) => this._locked && this.onKeyDown(e.keyCode));
+        document.addEventListener('mousemove', (e) => this._locked && this.onMouseMove(e.clientX, e.clientY, e.movementX, e.movementY, canvas), false);
+        document.addEventListener('mousedown', () => this._locked && this.onKeyDown(this.Keys.MOUSE_L), false);
+        document.addEventListener('mouseup', () => this._locked && this.onKeyUp(this.Keys.MOUSE_L), false);
     },
 
     // NOTE: Add more possible keys here (figure keycodes)

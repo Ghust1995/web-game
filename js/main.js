@@ -25,7 +25,7 @@ const THINGS_TO_LOAD = [
 // Each game object has a transform and components specifications
 // If there is a reusable component, move it to a component module (see meshComponent)
 // See scenes/Test01
-const RAW_HIERARCHY = require("./scenes/hidenseek/Test01");
+const RAW_HIERARCHY = require("./scenes/hidenseek/main");
 
 window.onload = function() {
   // Verifies if the browser supports webgl
