@@ -1,7 +1,7 @@
 {
-  "name": "business-cards",
+  "name": "my-engine-editor",
   "version": "1.0.0",
-  "description": "Simple grid for storing business cards",
+  "description": "Constant editor for real time changing in a my-engine game",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "griddle-react": "^0.6.1",
     "lodash": "^4.15.0",
     "react": "^15.3.1",
-    "react-dom": "^15.3.1"
+    "react-dom": "^15.3.1",
+    "react-redux": "*"
   },
   "devDependencies": {
     "babel-core": "^6.14.0",
