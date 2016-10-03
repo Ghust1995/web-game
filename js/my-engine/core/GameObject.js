@@ -37,8 +37,8 @@ function GameObject(name, transform, components, parent) {
     this.rotation.copy(new THREE.Euler(0, 0, 0));
     this.scale.copy(new THREE.Vector3(1, 1, 1));
   }
-  this.components = components;
-  CallAllComponentsWithFunction(this.components, "init", this);
+  this.components = {};
+  this.AddComponents(components);
 }
 
 GameObject.prototype = Object.create(THREE.Object3D.prototype, {
@@ -51,7 +51,6 @@ GameObject.prototype = Object.create(THREE.Object3D.prototype, {
 
 GameObject.prototype.constructor = GameObject;
 
-// TODO: make custom components
 GameObject.prototype.AddComponents = function(newComponents) {
   // Calls all init from new components
   CallAllComponentsWithFunction(newComponents, "init", this);

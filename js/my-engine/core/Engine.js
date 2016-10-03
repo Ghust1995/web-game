@@ -26,13 +26,12 @@ module.exports = {
     // Waits for stuff to be loaded
     LoadAssets(thingsToLoad).then(function(assets) {
       var firebase = new FirebaseManager(config.FIREBASE);
-      var deps = {Firebase: firebase, Assets: assets};
-      this.init(rawHierarchyGenerator, deps, config);
+      this.init(rawHierarchyGenerator, firebase, assets, config);
       this.animate();
     }.bind(this));
   },
 
-  init: function(rawHierarchyGenerator, deps, config) {
+  init: function(rawHierarchyGenerator, firebase, assets, config) {
     // Set specifications
     this.specs = config.INIT_SPECS;
 
@@ -46,7 +45,7 @@ module.exports = {
     container.appendChild( this.renderer.domElement );
 
     // Creates the hierarchy
-    this.hierarchy = createHierarchy(rawHierarchyGenerator, deps);
+    this.hierarchy = createHierarchy(rawHierarchyGenerator, {Firebase: firebase, Assets: assets});
 
     // Stats display
     if(this.specs.SHOW_STATS) {

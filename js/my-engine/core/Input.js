@@ -1,6 +1,5 @@
 // This input class was created to simulate something closer to what Game Engine Architecture says.
 // There is an unnecessary step to make inputs into a number to do bitwise operations
-
 const _ = require('lodash');
 
 var Input = {

@@ -1,15 +1,7 @@
 import io from 'socket.io';
+import _ from 'lodash';
 
-let components = {
-  Bullet: {
-    speed: 1000,
-    potato: 10,
-  },
-  Player: {
-    speed: 100,
-    health: 50,
-  }
-};
+let components = {};
 
 export default function(server) {
   const socketServer = io(server);
@@ -19,8 +11,11 @@ export default function(server) {
     connections.push(socket);
     console.log("New socket connection.");
 
-    socket.on('new_component', data => {
-      console.log(data);
+    socket.on('new_component', newComponent => {
+      _.extend(components, newComponent);
+      _.forEach(connections, (connectedSocket) => {
+        connectedSocket.emit('new_component', newComponent);
+      });
     });
 
     socket.on('disconnect', () => {

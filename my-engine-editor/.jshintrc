@@ -1,10 +1,9 @@
 {
-  "esnext": true,
+  "esversion": 6,
   "strict": "implied",
   "browserify": true,
   "devel": true,
   "unused": true,
   "undef": true,
-
   "-W138": false
 }

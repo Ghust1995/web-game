@@ -23,7 +23,12 @@ export default function(store) {
 
   socket.on('all_components', (components) => {
     _.forIn(components, (component, name) => {
-      console.log(component);
+      store.dispatch(addComponent(name, component));
+    });
+  });
+
+  socket.on('new_component', (newComponent) => {
+    _.forIn(newComponent, (component, name) => {
       store.dispatch(addComponent(name, component));
     });
   });
