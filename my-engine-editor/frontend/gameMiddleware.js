@@ -1,0 +1,30 @@
+import io from 'socket.io-client';
+import _ from 'lodash';
+let socket = {};
+
+import {addComponent} from './actions';
+
+//const editorRef = () => firebase.database().ref('hierarchy');
+
+export function gameMiddleware(store) {
+  return next => action => {
+    const result = next(action);
+    if(action.type === "EDIT_VARIABLE") {
+      let components = store.getState().components;
+      console.log(components);
+      //editorRef().set(components);
+    }
+    return result;
+  };
+}
+
+export default function(store) {
+  socket = io.connect('localhost:5000');
+
+  socket.on('all_components', (components) => {
+    _.forIn(components, (component, name) => {
+      console.log(component);
+      store.dispatch(addComponent(name, component));
+    });
+  });
+}

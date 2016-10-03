@@ -5,15 +5,15 @@ import { createStore, applyMiddleware} from 'redux';
 
 import editorReducer from './reducers';
 import App from './components/App';
-import startFirebase, {firebaseMiddleware} from './reduxFirebase';
+import connectGame, {gameMiddleware} from './gameMiddleware';
 
 let store = createStore(
   editorReducer,
   applyMiddleware(
-    firebaseMiddleware
+    gameMiddleware
   )
 );
-startFirebase(store);
+connectGame(store);
 
 function renderInContainer(container) {
   render(
