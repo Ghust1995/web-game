@@ -1,13 +1,18 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware} from 'redux';
 
-import editorApp from './reducers';
+import editorReducer from './reducers';
 import App from './components/App';
-import startFirebase from './reduxFirebase';
+import startFirebase, {firebaseMiddleware} from './reduxFirebase';
 
-let store = createStore(editorApp);
+let store = createStore(
+  editorReducer,
+  applyMiddleware(
+    firebaseMiddleware
+  )
+);
 startFirebase(store);
 
 function renderInContainer(container) {

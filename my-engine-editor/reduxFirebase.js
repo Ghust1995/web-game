@@ -4,6 +4,20 @@ import 'firebase/auth';
 
 import {addComponent} from './actions';
 
+const editorRef = () => firebase.database().ref('hierarchy');
+
+export function firebaseMiddleware(store) {
+  return next => action => {
+    const result = next(action);
+    if(action.type === "EDIT_VARIABLE") {
+      let components = store.getState().components;
+      console.log(components);
+      editorRef().set(components);
+    }
+    return result;
+  };
+}
+
 export default function(store) {
   firebase.initializeApp({
     apiKey: "AIzaSyAqHGwQN2J5BHniiZG0RtrFMHmQRDAKWCQ",
@@ -12,9 +26,7 @@ export default function(store) {
     storageBucket: "multiplayer-2108d.appspot.com",
   });
 
-  firebase.database()
-    .ref('hierarchy')
-    .on('child_added',
+  editorRef().on('child_added',
         (component) => (store.dispatch(addComponent(component.key, component.val())))
       );
 }
