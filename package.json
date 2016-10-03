@@ -21,6 +21,7 @@
     "webpack-dev-server": "^1.14.1"
   },
   "scripts": {
-    "dev-server": "node .\\dev-server\\main"
+    "dev-server": "node .\\dev-server\\main",
+    "deploy": "webpack & firebase deploy"
   }
 }

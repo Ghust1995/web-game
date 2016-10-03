@@ -4,5 +4,7 @@
   "browserify": true,
   "devel": true,
   "unused": true,
-  "undef": true
+  "undef": true,
+
+  "-W138": false
 }

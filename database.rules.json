@@ -3,6 +3,10 @@
     "players": {
       ".read": true,
       ".write": true
-    }    
+    },
+    "hierarchy": {
+      ".read": true,
+      ".write": true
+    }
   }
 }
