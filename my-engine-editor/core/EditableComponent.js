@@ -5,16 +5,22 @@ let socket = io.connect('localhost:5000');
 
 var EditableComponent = function(name, componentCreator) {
   var defaultComponent = componentCreator();
-  var defaultVariables = _.omitBy(defaultComponent, (c) => _.isFunction(c) && _.isUndefined(c));
+  var editableVariables = _.omitBy(defaultComponent, (c) => _.isFunction(c) && _.isUndefined(c));
   socket.emit("new_component", {
-    [name]: defaultVariables
+    [name]: editableVariables
   });
-
-  ////firebase.database.ref('hierarchy/' + name).set(defaultVariables);
 
   return (...params) => {
     var result = componentCreator(params);
-    console.log(result);
+    //var editableFields = _.omitBy(defaultComponent, _.isFunction());
+
+    console.log("subcribed to " + 'edit_variable_' + _.lowerCase(name));
+    socket.on('edit_variable_' + _.lowerCase(name), (c) => {
+      _.assignIn(editableVariables, c);
+      _.assignIn(result, editableVariables);
+    });
+
+    _.assignIn(result, editableVariables);
     return result;
   };
 };

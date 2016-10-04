@@ -3,7 +3,7 @@ const Input = require('my-engine/core/Input');
 const Instantiate = require('my-engine/core/Instantiate');
 
 // Editor modules
-const EditableComponent = require('my-engine-editor/core/EditableComponent');
+const EditableComponent = require('../../../../my-engine-editor/core/EditableComponent');
 
 // Custom Game Objects
 const Bullet = require('../customGameObjects/Bullet');

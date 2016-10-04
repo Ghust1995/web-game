@@ -10,9 +10,7 @@ export function gameMiddleware(store) {
   return next => action => {
     const result = next(action);
     if(action.type === "EDIT_VARIABLE") {
-      let components = store.getState().components;
-      console.log(components);
-      //editorRef().set(components);
+      socket.emit("edit_variable", action);
     }
     return result;
   };

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const EditableComponent = require('my-engine-editor/core/EditableComponent');
+const EditableComponent = require('../../../../my-engine-editor/core/EditableComponent');
 
 module.exports = EditableComponent("Bullet", () => ({
   speed: 150,

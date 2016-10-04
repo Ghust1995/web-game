@@ -9,8 +9,7 @@
     "jquery": "^3.1.0",
     "lodash": "^4.14.2",
     "three": "^0.79.0",
-    "my-engine": "./js/my-engine",
-    "my-engine-editor": "./my-engine-editor"
+    "my-engine": "./js/my-engine"
   },
   "devDependencies": {
     "bluebird": "^3.4.6",

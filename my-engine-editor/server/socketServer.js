@@ -1,7 +1,8 @@
 import io from 'socket.io';
 import _ from 'lodash';
 
-let components = {};
+let components = {
+};
 
 export default function(server) {
   const socketServer = io(server);
@@ -15,6 +16,16 @@ export default function(server) {
       _.extend(components, newComponent);
       _.forEach(connections, (connectedSocket) => {
         connectedSocket.emit('new_component', newComponent);
+      });
+    });
+
+    socket.on('edit_variable', (editAction) => {
+      _.set(components, `${editAction.component}.${editAction.variable}`, editAction.value);
+      _.forEach(connections, (connectedSocket) => {
+         console.log("Emmited to " + 'edit_variable_' + _.lowerCase(editAction.component));
+         connectedSocket.emit('edit_variable_' + _.lowerCase(editAction.component), {
+           [editAction.variable]: editAction.value
+         });
       });
     });
 
