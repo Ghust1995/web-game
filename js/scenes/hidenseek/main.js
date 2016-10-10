@@ -12,6 +12,7 @@ const LightComponent = require('my-engine/components/Light');
 const TopDownTV = require('./customGameObjects/TopDownTV');
 const Player = require('./customGameObjects/Player');
 const NetworkPlayers = require('./customGameObjects/NetworkPlayers');
+const NetworkBullets = require('./customGameObjects/NetworkBullets');
 
 module.exports = (Assets, Firebase) => ({
     transform: null, // Not sure why one would change the transform of the whole scene, but here for extensibility
@@ -19,6 +20,7 @@ module.exports = (Assets, Firebase) => ({
     children: {
         Player: Player(Firebase),
         NetworkPlayers: NetworkPlayers(Firebase),
+        NetworkBullets: NetworkBullets(Firebase),
         World: {
             children: {
                 Skybox: {

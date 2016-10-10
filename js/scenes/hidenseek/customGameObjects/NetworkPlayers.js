@@ -21,6 +21,7 @@ module.exports = (Firebase) => ({
                     var rotation = val.transform.rotation;
                     var name = val.name;
 
+                    // TODO: Make this transform setting easier
                     Instantiate(this.BaseGameObject, name, go, {
                         transform: {
                             position: new THREE.Vector3(position.x, position.y, position.z),

@@ -33,10 +33,11 @@ module.exports = (baseRef, firebase, uuidGenerator) => ({
     // Make sure player is removed when disconnected
     this.firebase.database.ref(this.baseRef + '/' + this.key).onDisconnect().remove();
   },
-  update: function(go, deltaTime) {
+  update: function(go/*, deltaTime*/) {
     this.updateDB(go);
   },
   updateDB: function (go) {
+    // TODO: better way to pass this...
     this.firebase.database.ref(this.baseRef + '/' + this.key).update({transform: {
         position: {
           x: go.transform.position.x,

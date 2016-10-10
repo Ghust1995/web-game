@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 // Engine modules
 const Input = require('my-engine/core/Input');
+const Instantiate = require('my-engine/core/Instantiate');
 
 // Core components
 const MeshComponent = require('my-engine/components/Mesh');
@@ -16,6 +17,9 @@ const PlayerControllerComponent = require('../customComponents/PlayerController'
 // Custom modules
 const RandomNameGenerator = require('../../../random-names/RandomNames');
 
+// Custom Game Objects
+const Bullet = require('../customGameObjects/Bullet');
+
 module.exports = (Firebase) => ({
     transform: {
         position: new THREE.Vector3(0, 32, 0),
@@ -24,6 +28,30 @@ module.exports = (Firebase) => ({
     },
     components: {
         NetworkTransform: NetworkTransformComponent("players", Firebase, RandomNameGenerator.getUnique),
+        ShootBullets: {
+          update: function(go) {
+            if(Input.isPressed(Input.Keys.MOUSE_L)) {
+              Firebase.database.ref('bullets').push({transform: {
+                  position: {
+                    x: go.transform.position.x,
+                    y: go.transform.position.y,
+                    z: go.transform.position.z
+                  },
+                  rotation: {
+                    x: go.transform.rotation.x,
+                    y: go.transform.rotation.y,
+                    z: go.transform.rotation.z
+                  },
+                  scale: {
+                    x: go.transform.scale.x,
+                    y: go.transform.scale.y,
+                    z: go.transform.scale.z
+                  }
+                }
+              });
+            }
+          }
+        },
         MouseRotation: {
             update(go /*, deltaTime*/ ) {
                 go.rotateY(-Input.Mouse.delta.x);
