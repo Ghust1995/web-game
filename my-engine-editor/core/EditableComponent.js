@@ -11,7 +11,7 @@ var EditableComponent = function(name, componentCreator) {
   });
 
   return (...params) => {
-    var result = componentCreator(params);
+    var result = _.spread(componentCreator)(params);
     //var editableFields = _.omitBy(defaultComponent, _.isFunction());
 
     console.log("subcribed to " + 'edit_variable_' + _.lowerCase(name));
@@ -20,7 +20,12 @@ var EditableComponent = function(name, componentCreator) {
       _.assignIn(result, editableVariables);
     });
 
-    _.assignIn(result, editableVariables);
+    _.assignInWith(
+      result,
+      editableVariables,
+      (objValue, srcValue) => _.isUndefined(objValue) ? srcValue : objValue
+    );
+
     return result;
   };
 };

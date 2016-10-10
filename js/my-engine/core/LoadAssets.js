@@ -24,6 +24,7 @@ function Load(thingsToLoad) {
         }
         // Uses jquery otherwise
         else {
+          // TODO: Remove jquery dependecy
           $.get(t.path, (data) => cResolve(t, data));
         }
       });

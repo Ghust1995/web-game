@@ -4,7 +4,9 @@ const GameObject = require('./GameObject');
 
 function Instantiate(rawGOGenerator, name, parent, params) {
     // NOTE: Experimental thing to make params not necessary... Might be slow...
-    var raw = (_.spread(rawGOGenerator))(_.map(getArgs(rawGOGenerator), (arg) => params[arg]));
+    var argsMap = _.map(getArgs(rawGOGenerator), (arg) => params[arg]);
+    var funcspred = _.spread(rawGOGenerator);
+    var raw = funcspred(argsMap);
 
     // Recursively constructs game objects and add them to their parents;
     InstantiateRecursive(raw, name, parent);
