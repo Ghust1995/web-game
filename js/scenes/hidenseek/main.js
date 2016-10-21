@@ -10,6 +10,7 @@ const LightComponent = require('my-engine/components/Light');
 
 // Custom Game Objects
 const TopDownTV = require('./customGameObjects/TopDownTV');
+const Canvas = require('./customGameObjects/Canvas');
 const Player = require('./customGameObjects/Player');
 const NetworkPlayers = require('./customGameObjects/NetworkPlayers');
 const NetworkBullets = require('./customGameObjects/NetworkBullets');
@@ -48,22 +49,22 @@ module.exports = (Assets, Firebase) => ({
                         AmbientLight: LightComponent("ambient", 0xFF00FF, 0.25),
                     }
                 },
-                Mirror1: TopDownTV({
+                Canvas1: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
                     position: new THREE.Vector3(0, 375, -500),
                     rotation: new THREE.Euler(0, 0, 0),
                     scale: new THREE.Vector3(1, 1, 1)
                 }),
-                Mirror2: TopDownTV({
+                Canvas2: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
                     position: new THREE.Vector3(0, 375, 500),
                     rotation: new THREE.Euler(0, Math.PI, 0),
                     scale: new THREE.Vector3(1, 1, 1)
                 }),
-                Mirror3: TopDownTV({
+                Canvas3: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
                     position: new THREE.Vector3(500, 375, 0),
                     rotation: new THREE.Euler(0, -Math.PI / 2, 0),
                     scale: new THREE.Vector3(1, 1, 1)
                 }),
-                Mirror4: TopDownTV({
+                Canvas4: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
                     position: new THREE.Vector3(-500, 375, 0),
                     rotation: new THREE.Euler(0, Math.PI / 2, 0),
                     scale: new THREE.Vector3(1, 1, 1)

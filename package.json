@@ -22,6 +22,7 @@
   },
   "scripts": {
     "dev-server": "node .\\dev-server\\main",
+    "editor": "babel-node .\\my-engine-editor\\server",
     "deploy": "webpack & firebase deploy"
   }
 }

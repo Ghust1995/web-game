@@ -18,6 +18,11 @@ const THINGS_TO_LOAD = [
       asset.wrapS = asset.wrapT = THREE.RepeatWrapping;
       asset.repeat.set( 10, 10 );
     }
+  },
+  {
+    loader: null,
+    name: "canvasShader",
+    path: "/shaders/canvas.frag"
   }
 ];
 
