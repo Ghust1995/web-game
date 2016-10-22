@@ -49,22 +49,22 @@ module.exports = (Assets, Firebase) => ({
                         AmbientLight: LightComponent("ambient", 0xFF00FF, 0.25),
                     }
                 },
-                Canvas1: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
+                Canvas1: Canvas(Assets, new THREE.Color(0xffffff), {
                     position: new THREE.Vector3(0, 375, -500),
                     rotation: new THREE.Euler(0, 0, 0),
                     scale: new THREE.Vector3(1, 1, 1)
                 }),
-                Canvas2: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
+                Canvas2: Canvas(Assets, new THREE.Color(0xffffff), {
                     position: new THREE.Vector3(0, 375, 500),
                     rotation: new THREE.Euler(0, Math.PI, 0),
                     scale: new THREE.Vector3(1, 1, 1)
                 }),
-                Canvas3: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
+                Canvas3: Canvas(Assets, new THREE.Color(0xffffff), {
                     position: new THREE.Vector3(500, 375, 0),
                     rotation: new THREE.Euler(0, -Math.PI / 2, 0),
                     scale: new THREE.Vector3(1, 1, 1)
                 }),
-                Canvas4: Canvas(Assets, new THREE.Vector3(1, 1, 1), {
+                Canvas4: Canvas(Assets, new THREE.Color(0xffffff), {
                     position: new THREE.Vector3(-500, 375, 0),
                     rotation: new THREE.Euler(0, Math.PI / 2, 0),
                     scale: new THREE.Vector3(1, 1, 1)

@@ -1,9 +1,13 @@
 //Node Modules - Usually used
 const THREE = require('three');
 
+// Engine modules
+const EventBroker = require('my-engine/core/EventBroker');
+
 // Core Components
 const MeshComponent = require('my-engine/components/Mesh');
 const NetworkTransformComponent = require('my-engine/components/NetworkTransform');
+
 
 // Custom components
 const BulletComponent = require('../customComponents/Bullet');
@@ -22,7 +26,7 @@ module.exports = function(transform, networkId, Firebase) {
                 params: {
                     color: Math.random() * 0xFFFFFF
                 }
-            })
+            }),
         }
     });
 };
