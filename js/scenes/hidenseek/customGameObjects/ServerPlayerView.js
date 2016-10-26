@@ -8,20 +8,15 @@ const MeshComponent = require('my-engine/components/Mesh');
 const NameOnHitScanComponent = require('../customComponents/NameOnHitScan');
 const ServerNetworkTransform = require('../customComponents/ServerNetworkTransform');
 
+// Custom Game Objects
+const PlayerBody = require('../customGameObjects/PlayerBody');
+
 module.exports = (transform, key) => ({
     transform: transform,
+    children: {
+      Body: PlayerBody()
+    },
     components: {
-      Mesh: MeshComponent({
-          type: THREE.SphereGeometry,
-          params: [20, 32, 32]
-        },
-        {
-          type: THREE.MeshPhongMaterial,
-          params: {
-            color: Math.random() * 0xFFFFFF
-          }
-        }
-      ),
       Hitscan: NameOnHitScanComponent(),
       ServerNetworkTransform: ServerNetworkTransform(key),
     }

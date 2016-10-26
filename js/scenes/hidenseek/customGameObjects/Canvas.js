@@ -74,9 +74,9 @@ module.exports = (Assets, initialColor, transform) => ({
 
                     for (let i = (hitRelPosX - 10); i < (hitRelPosX + 10); i++) {
                       for (let j = (hitRelPosY - 10); j < (hitRelPosY + 10); j++) {
-                        this.splatMap[(i + 255*j) * 4 + 0] = hitInfo.color.r * 255;
-                        this.splatMap[(i + 255*j) * 4 + 1] = hitInfo.color.g * 255;
-                        this.splatMap[(i + 255*j) * 4 + 2] = hitInfo.color.b * 255;
+                        this.splatMap[(i + 255*j) * 4 + 0] *= hitInfo.color.r;
+                        this.splatMap[(i + 255*j) * 4 + 1] *= hitInfo.color.g;
+                        this.splatMap[(i + 255*j) * 4 + 2] *= hitInfo.color.b;
                         this.splatMap[(i + 255*j) * 4 + 3] = 255;
                       }
                     }

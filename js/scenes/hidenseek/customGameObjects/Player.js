@@ -4,10 +4,9 @@ const _ = require('lodash');
 
 // Engine modules
 const Input = require('my-engine/core/Input');
-const Instantiate = require('my-engine/core/Instantiate');
+//const Instantiate = require('my-engine/core/Instantiate');
 
 // Core components
-const MeshComponent = require('my-engine/components/Mesh');
 const CameraComponent = require('my-engine/components/Camera');
 const NetworkTransformComponent = require('my-engine/components/NetworkTransform');
 
@@ -18,7 +17,8 @@ const PlayerControllerComponent = require('../customComponents/PlayerController'
 const RandomNameGenerator = require('../../../random-names/RandomNames');
 
 // Custom Game Objects
-const Bullet = require('../customGameObjects/Bullet');
+//const Bullet = require('../customGameObjects/Bullet');
+const PlayerBody = require('../customGameObjects/PlayerBody');
 
 module.exports = (Firebase) => ({
     transform: {
@@ -80,60 +80,8 @@ module.exports = (Firebase) => ({
         }
     },
     children: {
-        Sword: {
-            transform: {
-                position: new THREE.Vector3(-20, 0, -30),
-                rotation: new THREE.Euler(-Math.PI / 2, 0, 0),
-                scale: new THREE.Vector3(1, 1, 1)
-            },
-            components: {
-                Mesh: MeshComponent({
-                    type: THREE.CylinderGeometry,
-                    params: [1, 5, 60]
-                }, {
-                    type: THREE.MeshPhongMaterial,
-                    params: {
-                        color: 0xFFFFFF
-                    }
-                }),
-            },
-        },
-        Shield: {
-            transform: {
-                position: new THREE.Vector3(20, 0, -20),
-                rotation: new THREE.Euler(Math.PI / 2, 0, 0),
-                scale: new THREE.Vector3(1, 1, 1)
-            },
-            components: {
-                Mesh: MeshComponent({
-                    type: THREE.CylinderGeometry,
-                    params: [10, 10, 5]
-                }, {
-                    type: THREE.MeshPhongMaterial,
-                    params: {
-                        color: 0xFFFFFF
-                    }
-                }),
-            },
-        },
-        Head: {
-            transform: {
-                position: new THREE.Vector3(0, 30, 0),
-                rotation: new THREE.Euler(0, 0, 0),
-                scale: new THREE.Vector3(1, 1, 1)
-            },
-            components: {
-                Mesh: MeshComponent({
-                    type: THREE.SphereGeometry,
-                    params: [10, 32, 32]
-                }, {
-                    type: THREE.MeshPhongMaterial,
-                    params: {
-                        color: Math.random() * 0xFFFFFF
-                    }
-                }),
-            },
-        },
+        //TODO: Make player on client not visible
+        //Body: PlayerBody(),
         ThirdPersonCamera: {
             transform: {
                 position: new THREE.Vector3(0, 50, 300),
