@@ -24,7 +24,6 @@ module.exports = EditableComponent("Bullet", (networkid, firebase) => ({
     go.transform.position.add(go.transform.getForward().multiplyScalar(this.speed * deltaTime));
     this.totalTime += deltaTime;
     if(Math.abs(go.getWorldPosition().x) > 500 || Math.abs(go.getWorldPosition().z) > 500) {
-      console.log("Hit a wall");
       EventBroker.publish("hitwall", {position: go.getWorldPosition(), color: go.components.Mesh.material.color});
       this.remove(go);
     }

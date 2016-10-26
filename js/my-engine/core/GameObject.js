@@ -52,11 +52,11 @@ GameObject.prototype = Object.create(THREE.Object3D.prototype, {
 GameObject.prototype.constructor = GameObject;
 
 GameObject.prototype.AddComponents = function(newComponents) {
-  // Calls all init from new components
-  CallAllComponentsWithFunction(newComponents, "init", this);
-
   //  Extend components
   _.extend(this.components, newComponents);
+
+  // Calls all init from new components
+  CallAllComponentsWithFunction(newComponents, "init", this);  
 };
 
 GameObject.prototype.baseUpdate = function(deltaTime) {

@@ -21,8 +21,13 @@ const THINGS_TO_LOAD = [
   },
   {
     loader: null,
-    name: "canvasShader",
+    name: "canvasFragShader",
     path: "/shaders/canvas.frag"
+  },
+  {
+    loader: null,
+    name: "canvasVertShader",
+    path: "/shaders/canvas.vert"
   }
 ];
 
