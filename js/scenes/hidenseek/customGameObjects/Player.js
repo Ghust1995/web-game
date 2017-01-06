@@ -18,7 +18,7 @@ const RandomNameGenerator = require('../../../random-names/RandomNames');
 
 // Custom Game Objects
 //const Bullet = require('../customGameObjects/Bullet');
-const PlayerBody = require('../customGameObjects/PlayerBody');
+//const PlayerBody = require('../customGameObjects/PlayerBody');
 
 module.exports = (Firebase) => ({
     transform: {

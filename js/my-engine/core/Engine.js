@@ -65,7 +65,6 @@ module.exports = {
   // Study better fixed loose time architecture
   animate: function() {
     requestAnimationFrame(this.animate.bind(this));
-
     this.update();
   },
 

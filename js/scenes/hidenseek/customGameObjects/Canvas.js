@@ -1,11 +1,12 @@
 const THREE = require('three');
-const _ = require('lodash');
-
-// Engine modules
-const EventBroker = require('my-engine/core/EventBroker');
+//const _ = require('lodash');
 
 // Components
 const MeshComponent = require('my-engine/components/Mesh');
+
+const CirclePaintCanvasComponent = require('../customComponents/CirclePaintCanvas');
+
+const resolution = 1024;
 
 module.exports = (Assets, initialColor, transform) => ({
     transform: transform,
@@ -40,55 +41,6 @@ module.exports = (Assets, initialColor, transform) => ({
                 vertexShader: Assets.canvasVertShader
             }
         }),
-        PlaneMesh: {
-            texSplatMap: null,
-            splatMap: new Uint8Array(256 * 256 * 4),
-            hits: 0,
-            init: function(go) {
-                for (let i = 0; i < 256 * 256; i++) {
-                    this.splatMap[i * 4 + 0] = 255;
-                    this.splatMap[i * 4 + 1] = 255;
-                    this.splatMap[i * 4 + 2] = 255;
-                    this.splatMap[i * 4 + 3] = 255;
-                }
-
-                EventBroker.subscribe("hitwall", (hitInfo) => {
-                    var hitRelPosX = 0;
-                    var hitRelPosY = 256 - Math.floor(256*((go.transform.position.y - hitInfo.position.y) + 500)/1000);
-
-                    if (go.transform.position.x == -500 && hitInfo.position.x <= -500) {
-                      hitRelPosX = Math.floor(256*((go.transform.position.z - hitInfo.position.z) + 500)/1000);
-                    }
-                    else if(go.transform.position.x == 500 && hitInfo.position.x >= 500) {
-                      hitRelPosX = 256 - Math.floor(256*((go.transform.position.z - hitInfo.position.z) + 500)/1000);
-                    }
-                    else if(go.transform.position.z == -500 && hitInfo.position.z <= -500) {
-                      hitRelPosX = 256 - Math.floor(256*((go.transform.position.x - hitInfo.position.x) + 500)/1000);
-                    }
-                    else if (go.transform.position.z == 500 && hitInfo.position.z >= 500) {
-                      hitRelPosX = Math.floor(256*((go.transform.position.x - hitInfo.position.x) + 500)/1000);
-                    }
-                    else {
-                      return;
-                    }
-
-                    for (let i = (hitRelPosX - 10); i < (hitRelPosX + 10); i++) {
-                      for (let j = (hitRelPosY - 10); j < (hitRelPosY + 10); j++) {
-                        this.splatMap[(i + 255*j) * 4 + 0] *= hitInfo.color.r;
-                        this.splatMap[(i + 255*j) * 4 + 1] *= hitInfo.color.g;
-                        this.splatMap[(i + 255*j) * 4 + 2] *= hitInfo.color.b;
-                        this.splatMap[(i + 255*j) * 4 + 3] = 255;
-                      }
-                    }
-                    this.texSplatMap.needsUpdate = true;
-                });
-                this.texSplatMap = new THREE.DataTexture(this.splatMap, 255, 255, THREE.RGBAFormat);
-                this.texSplatMap.needsUpdate = true;
-                go.components.Mesh.material.uniforms.uSplatMap.value = this.texSplatMap;
-            },
-            update: function(go, deltaTime) {
-                go.components.Mesh.material.uniforms.uTime.value += deltaTime;
-            }
-        }
+        CirclePaintCanvas: CirclePaintCanvasComponent(resolution),
     }
 });
